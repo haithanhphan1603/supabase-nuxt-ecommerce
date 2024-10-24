@@ -1,6 +1,6 @@
 <template>
-  <div
-    class="group relative shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden h-full"
+  <Card
+    class="group relative shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
   >
     <!-- Image Section -->
     <div class="relative aspect-[4/3] overflow-hidden">
@@ -37,7 +37,7 @@
       >
         <div class="flex-1 space-y-1">
           <h3
-            class="font-semibold text-base md:text-lg leading-tight line-clamp-2 group-hover:text-violet-600 transition-colors"
+            class="font-semibold text-base md:text-lg leading-tight line-clamp-1 group-hover:text-violet-600 transition-colors"
           >
             {{ product?.name }}
           </h3>
@@ -45,21 +45,17 @@
 
         <!-- Price -->
         <p class="text-lg md:text-xl font-bold text-violet-600">
-          {{ product?.unitPrice }}
+          {{ product?.currency }}{{ product?.unitPrice }}
         </p>
       </div>
 
       <!-- Actions -->
       <div class="flex items-center gap-2 md:gap-3 pt-2">
-        <button
-          class="flex-1 bg-violet-600 hover:bg-violet-700 disabled:bg-gray-300 text-white px-3 py-2 text-xs md:px-4 md:py-2.5 transition-colors duration-200 flex items-center justify-center gap-2 disabled:cursor-not-allowed group/button"
-          :disabled="!product?.inStock"
-          @click="addToCart"
-        >
+        <Button class="flex-1" :disabled="!product?.inStock" @click="addToCart">
           <span class="text-sm font-semibold">
             {{ product?.inStock ? 'Add to Cart' : 'Out of Stock' }}
           </span>
-        </button>
+        </Button>
 
         <button
           class="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors duration-200 text-gray-600 hover:text-red-600"
@@ -70,7 +66,7 @@
         </button>
       </div>
     </div>
-  </div>
+  </Card>
 </template>
 
 <script setup lang="ts">
@@ -80,6 +76,7 @@ import { useWishlistStore } from '~/store/wishlist'
 import type { Tables } from '~/types/database.types'
 import { Trash2 } from 'lucide-vue-next'
 import { v4 as uuidv4 } from 'uuid'
+import Card from '../ui/card/Card.vue'
 
 interface Props {
   productId: number
