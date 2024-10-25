@@ -27,7 +27,7 @@ const supportLinks = ref([
 ])
 
 const accountLinks = ref([
-  { to: '/login', label: 'Login' },
+  { to: '/auth', label: 'Login' },
   { to: '/register', label: 'Register' },
   { to: '/shipping', label: 'My Cart' },
   { to: '/returns', label: 'My Wishlist' },

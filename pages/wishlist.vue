@@ -4,7 +4,7 @@
       YOUR VINY<span class="text-violet-600">LATA</span> WISHLIST
     </h2>
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <div v-for="item in wishlist" :key="item.id">
+      <div v-for="item in wishlist" :key="item.id as string">
         <WishlistItem :product-id="item.product_id" />
       </div>
     </div>

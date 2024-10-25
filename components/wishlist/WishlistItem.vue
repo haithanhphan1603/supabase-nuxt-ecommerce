@@ -84,7 +84,11 @@ interface Props {
 }
 
 type CartItem = TablesInsert<'cartItem'>
-type Product = Tables<'products'>
+type Product = Tables<'products'> & {
+  vendors: {
+    name: string
+  }
+}
 
 const props = defineProps<Props>()
 const product = ref<Product | null>(null)

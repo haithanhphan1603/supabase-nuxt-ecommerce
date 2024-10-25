@@ -15,7 +15,7 @@
         >
           <img
             class="category-section__img w-full h-full object-cover"
-            :src="category.backgroundImage"
+            :src="category.backgroundImage as string"
             :alt="category.name"
           />
           <div
@@ -33,17 +33,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import AspectRatio from '../ui/aspect-ratio/AspectRatio.vue'
+import type { Tables } from '~/types/database.types'
 
 const supabase = useSupabaseClient()
 
-interface Category {
-  id: number
-  name: string
-  slug: string
-  backgroundImage: string
-}
-
-const categories = ref<Category[]>([])
+const categories = ref<Tables<'categories'>[]>([])
 
 async function fetchSampleCategories() {
   const { data, error } = await supabase
