@@ -1,5 +1,8 @@
 <template>
   <div ref="collectionRef" class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <Head>
+      <Title>{{ category?.name }}</Title>
+    </Head>
     <div class="flex flex-col md:flex-row md:space-x-8">
       <div class="w-full md:w-1/4 mb-6 md:mb-0">
         <CategorySearchBar v-model="searchInfo" class="sticky top-4" />
