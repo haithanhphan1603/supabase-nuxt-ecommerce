@@ -67,28 +67,24 @@ const { handleSubmit, resetForm } = useForm({
 
 // Form submission handler
 const onSubmit = handleSubmit(async (values) => {
-  try {
-    const { error } = await supabase.auth.updateUser({
-      data: {
-        firstName: values.firstName,
-        lastName: values.lastName,
-      },
-    })
-    if (error) {
-      throw createError({
-        name: 'Update failed',
-        message: error.message,
-      })
-    }
-    toast({
-      variant: 'success',
-      description: 'Your profile has been updated',
-      title: 'Profile updated',
-    })
-  } catch (error) {
+  const { error } = await supabase.auth.updateUser({
+    data: {
+      firstName: values.firstName,
+      lastName: values.lastName,
+    },
+  })
+  if (error) {
     errorMsg.value = error.message
-    console.error('Error updating profile:', error)
+    throw createError({
+      name: 'Update failed',
+      message: error.message,
+    })
   }
+  toast({
+    variant: 'success',
+    description: 'Your profile has been updated',
+    title: 'Profile updated',
+  })
 })
 </script>
 
