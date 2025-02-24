@@ -1,6 +1,6 @@
 <template>
   <div class="about-section grid grid-cols-2 lg:grid-cols-4 gap-4">
-    <CommonAppMagicCard
+    <CommonMagicCard
       v-for="(CONTENT, i) in CONTENTS"
       :key="i"
       :icon="CONTENT.icon"

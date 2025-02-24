@@ -22,5 +22,3 @@ interface Props {
 
 defineProps<Props>()
 </script>
-
-<style></style>
