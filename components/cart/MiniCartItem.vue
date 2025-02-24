@@ -64,10 +64,10 @@ const emit = defineEmits<{
 }>()
 
 const { getCartItemPrice, product } = useCart()
-const { fetchProduct } = useApiServices()
+const { fetchProductById } = useApiServices()
 
 async function fetchProductData() {
-  product.value = await fetchProduct(props.item.productId as number)
+  product.value = await fetchProductById(props.item.productId as number)
 }
 
 fetchProductData()
