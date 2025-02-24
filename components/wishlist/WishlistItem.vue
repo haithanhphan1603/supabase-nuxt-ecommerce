@@ -83,9 +83,9 @@ type CartItem = TablesInsert<'cartItem'>
 type Product = Tables<'products'>
 
 const props = defineProps<Props>()
-const product = ref<Product | null>(null)
+const product = ref<Partial<Product> | null>(null)
 
-const { fetchProduct } = useApiServices()
+const { fetchProductById } = useApiServices()
 const cartStore = useCartStore()
 const wishlistStore = useWishlistStore()
 
@@ -105,7 +105,9 @@ function removeFromWishlist() {
   wishlistStore.removeFromWishList(props.productId)
 }
 
-onMounted(async () => {
-  product.value = await fetchProduct(props.productId)
-})
+async function fetchProduct() {
+  product.value = await fetchProductById(props.productId)
+}
+
+fetchProduct()
 </script>

@@ -54,26 +54,21 @@ const { handleSubmit } = useForm({
 })
 
 const onSubmit = handleSubmit(async (values) => {
-  try {
-    const { error } = await supabase.auth.signUp({
-      email: values.email,
-      password: values.password,
-      options: {
-        data: {
-          firstName: values.firstName,
-          lastName: values.lastName,
-        },
+  const { error } = await supabase.auth.signUp({
+    email: values.email,
+    password: values.password,
+    options: {
+      data: {
+        firstName: values.firstName,
+        lastName: values.lastName,
       },
+    },
+  })
+  if (error) {
+    throw createError({
+      name: 'Register failed',
+      message: error.message,
     })
-    if (error) {
-      throw createError({
-        name: 'Register failed',
-        message: error.message,
-      })
-    }
-  } catch (error) {
-    errorMsg.value = error.message
-    console.log(error)
   }
 })
 

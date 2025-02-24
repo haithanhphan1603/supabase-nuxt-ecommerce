@@ -1,3 +1,4 @@
+import type { PostgrestError } from '@supabase/supabase-js'
 import { useToast } from '~/components/ui/toast'
 import type { TablesInsert } from '~/types/database.types'
 
@@ -50,9 +51,9 @@ export const useCartStore = defineStore(
       } catch (error) {
         toast({
           title: 'Error updating cart',
-          description: (error as Error).message,
+          description: (error as PostgrestError).message,
         })
-        console.error('Error updating cart:', error)
+        throw error
       }
     }
 

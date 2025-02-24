@@ -37,20 +37,15 @@ const { handleSubmit } = useForm({
 })
 
 const onSubmit = handleSubmit(async (values) => {
-  try {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: values.email,
-      password: values.password,
+  const { error } = await supabase.auth.signInWithPassword({
+    email: values.email,
+    password: values.password,
+  })
+  if (error) {
+    throw createError({
+      name: 'Login failed',
+      message: error.message,
     })
-    if (error) {
-      throw createError({
-        name: 'Login failed',
-        message: error.message,
-      })
-    }
-  } catch (error) {
-    errorMsg.value = error.message
-    console.log(error)
   }
 })
 

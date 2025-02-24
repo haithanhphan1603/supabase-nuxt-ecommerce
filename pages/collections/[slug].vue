@@ -25,7 +25,6 @@
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <!-- Use v-for to generate options from the array -->
                 <SelectItem
                   v-for="option in paginationOptions"
                   :key="option"
