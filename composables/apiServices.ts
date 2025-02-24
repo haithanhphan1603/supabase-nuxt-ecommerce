@@ -138,7 +138,7 @@ export const useApiServices = () => {
     return count
   }
 
-  async function fetchProduct(productId: number) {
+  async function fetchProductById(productId: number) {
     const { data, error } = await supabase
       .from('products')
       .select('name, unitPrice, primaryImage, vendors(name),currency,inStock')
@@ -331,7 +331,7 @@ export const useApiServices = () => {
     getWishlistItems,
     deleteWishlistItemApi,
     addToWishlistApi,
-    fetchProduct,
+    fetchProductById,
     fetchCartItemsByCartId,
     fetchCartByUserId,
     searchProduct,
