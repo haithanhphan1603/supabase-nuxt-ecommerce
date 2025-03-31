@@ -2,25 +2,6 @@
 
 A modern e-commerce platform built with Vue.js, Nuxt.js, and Supabase, offering real-time updates, secure authentication, and a responsive shopping experience.
 
-## ⭐ Features
-
-- **Real-time Updates**
-  - Live inventory tracking
-  - Instant price updates
-  - Real-time cart synchronization
-  - Live order status tracking (In progress)
-
-- **Secure Authentication**
-  - Email/password authentication
-  - Social media login integration (In progress)
-  - Role-based access control
-  - Secure session management 
-
-- **Responsive Design**
-  - Cross-browser compatibility
-  - Optimized for all screen sizes
-  - Touch-friendly interface
-
 ## 🛠️ Tech Stack
 
 - **Frontend**
