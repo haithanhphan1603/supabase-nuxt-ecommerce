@@ -25,5 +25,3 @@
 import Input from '../ui/input/Input.vue'
 import Button from '../ui/button/Button.vue'
 </script>
-
-<style></style>

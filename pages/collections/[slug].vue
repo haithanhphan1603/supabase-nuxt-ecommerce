@@ -5,7 +5,7 @@
     </Head>
     <div class="flex flex-col md:flex-row md:space-x-8">
       <div class="w-full md:w-1/4 mb-6 md:mb-0">
-        <CategorySearchBar v-model="searchInfo" class="sticky top-4" />
+        <CategoryFilter v-model="searchInfo" class="sticky top-4" />
       </div>
       <div class="w-full md:w-3/4">
         <h1
@@ -60,7 +60,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import ProductCard from '~/components/product/ProductCard.vue'
 import type { Tables } from '~/types/database.types'
 import type { CollectionSearchParams } from '~/types/search.types'
 import { SortBy } from '~/types/search.types'

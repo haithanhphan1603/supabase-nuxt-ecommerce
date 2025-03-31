@@ -8,7 +8,6 @@ import {
 } from 'lucide-vue-next'
 import { useCartStore } from '~/store/cart'
 import type { Tables } from '~/types/database.types'
-import SearchProductsDropdown from '../product/SearchProductsDropdown.vue';
 
 type Product = Tables<'products'>
 
@@ -82,7 +81,7 @@ watchDebounced(
           <div class="hidden sm:block mx-4 lg:mx-8 flex-1">
             <CommonAppSearchBar v-model="searchKey" class="w-full" />
           </div>
-          <SearchProductsDropdown :products @select="selectProduct"></SearchProductsDropdown>
+          <ProductResultsDropdown :products @select="selectProduct" />
         </div>
         <div class="flex items-center">
           <ul class="flex gap-1 items-center">
@@ -120,7 +119,7 @@ watchDebounced(
                 </div>
                 <span class="sr-only">Cart</span>
               </div>
-              <CartMiniCart
+              <CartDropdown
                 v-show="isMiniCartVisible"
                 class="absolute right-0 top-full"
               />

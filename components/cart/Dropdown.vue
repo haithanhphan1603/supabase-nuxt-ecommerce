@@ -11,7 +11,7 @@
       <CardContent class="p-0 border-b-slate-200">
         <ul>
           <li v-for="(item, index) in cartItems" :key="item.productId">
-            <CartMiniCartItem
+            <CartDropdownItem
               :item
               @decrease-quantity="decreaseItemQuantity(index)"
               @increase-quantity="increaseItemQuantity(index)"

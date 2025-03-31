@@ -61,8 +61,6 @@ import type { Swiper as SwiperType } from 'swiper'
 import Button from '../ui/button/Button.vue'
 import { MoveRightIcon, MoveLeftIcon } from 'lucide-vue-next'
 import type { Tables } from '~/types/database.types'
-import ProductCardSkeleton from './ProductCardSkeleton.vue'
-import AspectRatio from '~/components/ui/aspect-ratio/AspectRatio.vue'
 
 type Product = Tables<'products'> & {
   vendors: { name: string }
