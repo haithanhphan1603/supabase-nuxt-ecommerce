@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { Tabs, TabsList, TabsContent, TabsTrigger } from '~/components/ui/tabs'
-import ProfileForm from '~/components/account/ProfileForm.vue'
+import ProfileForm from '~/components/auth/ProfileForm.vue'
 import { LogOut } from 'lucide-vue-next'
 
 const user = useSupabaseUser()

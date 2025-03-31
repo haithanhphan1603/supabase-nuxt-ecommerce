@@ -1,5 +1,5 @@
 <template>
-  <AuthCard is-login>
+  <AuthContainer is-login>
     <form class="space-y-6" @submit="onSubmit">
       <div class="grid w-full items-center gap-4">
         <FormInput
@@ -18,13 +18,11 @@
       <span v-if="errorMsg" class="text-sm text-red-500">{{ errorMsg }}</span>
       <Button class="w-full" type="submit">Login</Button>
     </form>
-  </AuthCard>
+  </AuthContainer>
 </template>
 
 <script lang="ts" setup>
 import { useForm } from 'vee-validate'
-import AuthCard from '~/components/account/AuthCard.vue'
-import FormInput from '~/components/account/FormInput.vue'
 
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
