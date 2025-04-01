@@ -12,6 +12,7 @@
 
 <script lang="ts" setup>
 import type { InputTypeHTMLAttribute } from 'vue'
+import { Input } from '../ui/input'
 
 interface Props {
   name: string

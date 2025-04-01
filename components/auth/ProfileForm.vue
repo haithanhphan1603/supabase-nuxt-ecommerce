@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
-import FormInput from './FormInput.vue'
+import FormInput from './Input.vue'
 import { Button } from '@/components/ui/button'
 import {
   Card,

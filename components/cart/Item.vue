@@ -73,6 +73,6 @@ fetchProductData()
 </script>
 <style lang="scss" scoped>
 .cart-item__circle-x:hover {
-  fill: #94a3b8; /* Change to desired hover color */
+  fill: #94a3b8;
 }
 </style>

@@ -2,36 +2,36 @@
   <AuthCard>
     <form class="space-y-6" @submit="onSubmit">
       <div class="grid w-full items-center gap-4">
-        <FormInput
+        <AuthInput
           name="firstName"
           label="First Name"
           placeholder="What's your first name?"
           type="text"
-        ></FormInput>
-        <FormInput
+        ></AuthInput>
+        <AuthInput
           name="lastName"
           label="Last Name"
           placeholder="And your last name?"
           type="text"
-        ></FormInput>
-        <FormInput
+        ></AuthInput>
+        <AuthInput
           name="email"
           label="Email"
           placeholder="Where can we reach you?"
           type="email"
-        ></FormInput>
-        <FormInput
+        ></AuthInput>
+        <AuthInput
           name="password"
           label="Password"
           placeholder="Create a strong password"
           type="password"
-        ></FormInput>
-        <FormInput
+        ></AuthInput>
+        <AuthInput
           name="confirmPassword"
           label="Confirm Password"
           placeholder="Type it again to confirm"
           type="password"
-        ></FormInput>
+        ></AuthInput>
       </div>
       <span v-if="errorMsg" class="text-sm text-red-500">{{ errorMsg }}</span>
       <Button class="w-full" type="submit">Sign up</Button>
@@ -40,9 +40,6 @@
 </template>
 
 <script lang="ts" setup>
-import AuthCard from '~/components/account/AuthCard.vue'
-import FormInput from '~/components/account/FormInput.vue'
-
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 const errorMsg = ref('')
