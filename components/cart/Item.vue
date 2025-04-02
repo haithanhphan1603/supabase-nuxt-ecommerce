@@ -63,7 +63,9 @@ const emit = defineEmits<{
   (e: 'removeItem' | 'decreaseQuantity' | 'increaseQuantity'): void
 }>()
 
-const { cartItemPrice, product } = useCart(props.item)
+const item = toRef(() => props.item)
+
+const { cartItemPrice, product } = useCart(item)
 </script>
 <style lang="scss" scoped>
 .cart-item__circle-x:hover {
