@@ -21,7 +21,7 @@
           >
             <img
               class="category-section__img w-full h-full object-cover"
-              :src="category.backgroundImage"
+              :src="category.backgroundImage || ''"
               :alt="category.name"
             />
             <div

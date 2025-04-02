@@ -6,7 +6,11 @@
     >
       <NuxtLink :to="`/products/${product.slug}`">
         <AspectRatio :ratio="1" class="flex justify-center items-center">
-          <img loading="lazy" :src="product.primaryImage" :alt="product.name" />
+          <img
+            loading="lazy"
+            :src="product.primaryImage ?? ''"
+            :alt="product.name"
+          />
         </AspectRatio>
         <Button
           v-if="isHovered"
@@ -147,7 +151,6 @@ function addToCart() {
     price: props.product.unitPrice as number,
     productId: props.product.id,
     quantity: 1,
-    cartId: null,
     id: uuidv4(),
   }
   cartStore.addToCart(cartItem)

@@ -11,7 +11,7 @@
     </div>
     <CartItem
       v-for="(item, idx) in cartItems"
-      :key="item.productId"
+      :key="item.productId ?? `fallback-${idx}`"
       :item="item"
       @decrease-quantity="decreaseItemQuantity(idx)"
       @increase-quantity="increaseItemQuantity(idx)"

@@ -10,7 +10,10 @@
     <div v-if="cartItems.length > 0">
       <CardContent class="p-0 border-b-slate-200">
         <ul>
-          <li v-for="(item, index) in cartItems" :key="item.productId">
+          <li
+            v-for="(item, index) in cartItems"
+            :key="item.productId ?? `fallback-${index}`"
+          >
             <CartDropdownItem
               :item
               @decrease-quantity="decreaseItemQuantity(index)"

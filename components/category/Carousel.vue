@@ -60,28 +60,28 @@ import { ref, computed } from 'vue'
 import type { Swiper as SwiperType } from 'swiper'
 import Button from '../ui/button/Button.vue'
 import { MoveRightIcon, MoveLeftIcon } from 'lucide-vue-next'
-import type { Tables } from '~/types/database.types'
-
-type Product = Tables<'products'> & {
-  vendors: { name: string }
-}
+import type { QueryData } from '@supabase/supabase-js'
 
 interface Props {
   categoryId: number
 }
 const props = defineProps<Props>()
-const categoryName = ref<string>('')
-const categorySlug = ref<string>('')
-const products = ref<Product[]>([])
 
 const { width } = useWindowSize()
-
-const PRODUCTS_CATEGORIES = 'products_categories'
-
 const supabase = useSupabaseClient()
+const router = useRouter()
+
+const categoryName = ref<string>('')
+const categorySlug = ref<string>('')
+const products = ref<ProductWithVendor[]>([])
 const swiperInstance = ref()
 
-const router = useRouter()
+const PRODUCTS_CATEGORIES = 'products_categories'
+const productWithVendorQuery = supabase
+  .from('products')
+  .select('*,vendors(name)')
+  .single()
+type ProductWithVendor = QueryData<typeof productWithVendorQuery>
 
 const upperCaseCategoryName = computed(() => {
   return categoryName.value.toUpperCase()
@@ -114,11 +114,12 @@ async function fetchCategoryName() {
     .from('categories')
     .select('name,slug')
     .eq('id', props.categoryId)
+    .single()
   if (error) {
     console.error(error)
   } else {
-    categoryName.value = data[0].name
-    categorySlug.value = data[0].slug
+    categoryName.value = data.name
+    categorySlug.value = data.slug ?? ''
   }
 }
 
@@ -131,7 +132,9 @@ async function fetchProductsByCategoryId() {
   if (error) {
     console.error(error)
   } else {
-    products.value = data.map((item) => item.products)
+    products.value = data
+      .map((d) => d.products)
+      .filter((product): product is ProductWithVendor => product !== null)
   }
 }
 
