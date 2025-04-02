@@ -12,6 +12,10 @@ export const useApiServices = () => {
   const supabase = useSupabaseClient()
   const { toast } = useToast()
 
+  const productWithVendorsQuery = supabase
+    .from('products')
+    .select('name, unitPrice, primaryImage, vendors(name),currency,inStock')
+
   const apiError = (error: PostgrestError) => {
     return createError({
       message: error.message,
@@ -139,10 +143,9 @@ export const useApiServices = () => {
   }
 
   async function fetchProductById(productId: number) {
-    const { data, error } = await supabase
-      .from('products')
-      .select('name, unitPrice, primaryImage, vendors(name),currency,inStock')
+    const { data, error } = await productWithVendorsQuery
       .eq('id', productId)
+      .single()
     if (error) {
       console.error('Error fetching product', error)
       toast({
@@ -152,7 +155,7 @@ export const useApiServices = () => {
       })
       throw apiError(error)
     }
-    return data?.[0]
+    return data
   }
 
   async function deleteCart(cartId: string) {
@@ -321,6 +324,7 @@ export const useApiServices = () => {
   }
 
   return {
+    productWithVendorsQuery,
     getProductsByCategory,
     getCategoryBySlug,
     getTotalProductsByCategory,

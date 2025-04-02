@@ -8,7 +8,7 @@
       />
       <div>
         <h3 class="font-bold">{{ product?.name }}</h3>
-        <p class="text-sm text-gray-600">{{ product?.vendors.name }}</p>
+        <p class="text-sm text-gray-600">{{ product?.vendors?.name }}</p>
       </div>
     </div>
     <div class="flex w-1/2 justify-between items-center text-center">
@@ -34,7 +34,8 @@
         </Button>
       </div>
       <p class="font-bold w-1/3">
-        {{ product?.currency }} {{ getCartItemPrice(item.quantity) }}
+        {{ product?.currency }}
+        {{ cartItemPrice }}
       </p>
       <CircleX
         class="cart-item__circle-x absolute right-0 top-[15%] cursor-pointer"
@@ -50,11 +51,11 @@
 <script setup lang="ts">
 import { Minus, Plus, CircleX } from 'lucide-vue-next'
 import Button from '../ui/button/Button.vue'
-import type { Tables } from '~/types/database.types'
+import type { TablesInsert } from '~/types/database.types'
 import { useCart } from '~/composables/cart'
 
 interface Props {
-  item: Tables<'cartItem'>
+  item: TablesInsert<'cartItem'>
 }
 
 const props = defineProps<Props>()
@@ -62,14 +63,7 @@ const emit = defineEmits<{
   (e: 'removeItem' | 'decreaseQuantity' | 'increaseQuantity'): void
 }>()
 
-const { getCartItemPrice, product } = useCart()
-const { fetchProductById } = useApiServices()
-
-async function fetchProductData() {
-  product.value = await fetchProductById(props.item.productId as number)
-}
-
-fetchProductData()
+const { cartItemPrice, product } = useCart(props.item)
 </script>
 <style lang="scss" scoped>
 .cart-item__circle-x:hover {

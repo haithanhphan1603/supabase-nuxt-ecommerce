@@ -34,9 +34,11 @@ export const useCartStore = defineStore(
           cart.value = createNewCart(user.value?.id as string)
         }
 
+        // Update the cart total price based on current items
         cart.value.totalprice = calculateTotalPrice(cartItems.value)
         cart.value.updatedat = new Date().toISOString()
 
+        // Ensure all cart items have the correct cartId
         const aggregatedCartItems = cartItems.value.map((item) => ({
           ...item,
           cartId: cart.value!.id,
@@ -53,7 +55,6 @@ export const useCartStore = defineStore(
           title: 'Error updating cart',
           description: (error as PostgrestError).message,
         })
-        throw error
       }
     }
 
@@ -79,14 +80,18 @@ export const useCartStore = defineStore(
       const existingItemIndex = currentCartItems.findIndex(
         (i) => i.productId === item.productId,
       )
+
       if (existingItemIndex >= 0) {
+        // Update quantity for existing item
         currentCartItems[existingItemIndex].quantity += item.quantity
-        currentCartItems[existingItemIndex].price =
-          item.price * currentCartItems[existingItemIndex].quantity
+        // Update price (base item price × quantity)
+        currentCartItems[existingItemIndex].price = item.price
       } else {
+        // Ensure the new item has the correct cartId
         item.cartId = cart.value?.id || ''
         currentCartItems.push(item)
       }
+
       cartItems.value = [...currentCartItems]
       createOrUpdateCart()
     }
@@ -97,11 +102,13 @@ export const useCartStore = defineStore(
       cartItems.value = [...currentCartItems]
       createOrUpdateCart()
 
+      // Delete from database if the item has an ID
       if (removedItem.id) {
         const { error } = await supabase
           .from('cartItem')
           .delete()
           .eq('id', removedItem.id)
+
         if (error) {
           toast({
             title: 'Error deleting cart item',
@@ -144,6 +151,7 @@ export const useCartStore = defineStore(
       if (currentCartItems[idx].quantity > 1) {
         currentCartItems[idx].quantity -= 1
       } else {
+        // Remove the item if quantity would drop to 0
         currentCartItems.splice(idx, 1)
       }
       cartItems.value = [...currentCartItems]
@@ -159,13 +167,19 @@ export const useCartStore = defineStore(
           const items = await fetchCartItemsByCartId(existingCart.id)
           cartItems.value = items || []
         } else if (cart.value) {
+          // If there's no existing cart but we have a cart in store, create it
           createOrUpdateCart()
         }
       } catch (error) {
+        toast({
+          title: 'Error syncing cart',
+          description: (error as Error).message,
+        })
         console.error('Error syncing cart with user:', error)
       }
     }
 
+    // Watch for user changes to sync cart
     watch(
       user,
       async (newUser) => {

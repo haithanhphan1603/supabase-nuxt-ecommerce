@@ -1,18 +1,21 @@
-import type { Tables } from '~/types/database.types'
+import type { QueryData } from '@supabase/supabase-js'
+import type { TablesInsert } from '~/types/database.types'
 
-export const useCart = () => {
-  interface ProductWithVendor extends Tables<'products'> {
-    vendors: { name: string }
+export const useCart = (item: Ref<TablesInsert<'cartItem'>>) => {
+  type ProductWithVendor = QueryData<typeof productWithVendorsQuery>[number]
+  const { fetchProductById, productWithVendorsQuery } = useApiServices()
+  const product = ref<ProductWithVendor>()
+
+  const cartItemPrice = computed(() =>
+    (item.value.price * item.value.quantity).toFixed(2),
+  )
+  async function fetchProductData() {
+    product.value = await fetchProductById(item.value.productId as number)
   }
 
-  const product = ref<ProductWithVendor | null>(null)
-
-  const getCartItemPrice = (quantity: number) => {
-    return (quantity * (product.value?.unitPrice ?? 0)).toFixed(2)
-  }
-
+  fetchProductData()
   return {
+    cartItemPrice,
     product,
-    getCartItemPrice,
   }
 }

@@ -76,11 +76,11 @@ const totalPrice = computed(() => {
   return cart.value?.totalprice?.toFixed(2)
 })
 
-const navigateToCart = () => {
+function navigateToCart() {
   router.push('/cart')
 }
 
-const navigateToAllProducts = () => {
+function navigateToAllProducts() {
   router.push('/collections/all')
 }
 </script>

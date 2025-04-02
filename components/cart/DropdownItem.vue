@@ -7,13 +7,11 @@
     </div>
     <div class="flex flex-col gap-0.5">
       <CommonAppLink class="!font-bold" to="/test">
-        {{ product?.vendors.name }}
+        {{ product?.vendors?.name }}
       </CommonAppLink>
       <div>
         <h4>{{ product?.name }}</h4>
-        <h5 class="font-bold text-sm">
-          ${{ getCartItemPrice(item.quantity) }}
-        </h5>
+        <h5 class="font-bold text-sm">${{ cartItemPrice }}</h5>
       </div>
 
       <div class="flex mt-1">
@@ -48,29 +46,22 @@
 </template>
 
 <script setup lang="ts">
-import { CircleX, Plus, Minus } from 'lucide-vue-next'
-import { Card } from '../ui/card'
+import { Minus, Plus, CircleX } from 'lucide-vue-next'
 import Button from '../ui/button/Button.vue'
-import type { Tables } from '~/types/database.types'
+import type { TablesInsert } from '~/types/database.types'
 import { useCart } from '~/composables/cart'
 
 interface Props {
-  item: Tables<'cartItem'>
+  item: TablesInsert<'cartItem'>
 }
 
 const props = defineProps<Props>()
+
+const item = toRef(() => props.item)
+
 const emit = defineEmits<{
   (e: 'removeItem' | 'decreaseQuantity' | 'increaseQuantity'): void
 }>()
 
-const { getCartItemPrice, product } = useCart()
-const { fetchProductById } = useApiServices()
-
-async function fetchProductData() {
-  product.value = await fetchProductById(props.item.productId as number)
-}
-
-fetchProductData()
+const { cartItemPrice, product } = useCart(item)
 </script>
-
-<style scoped></style>

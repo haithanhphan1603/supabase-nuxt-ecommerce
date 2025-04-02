@@ -94,14 +94,13 @@
           </div>
         </div>
 
-        <!-- Add to Cart Button -->
         <Button
           class="w-full md:w-auto uppercase font-bold px-8 py-3 hover:bg-violet-700 transition-colors"
+          @click="addToCart"
         >
           Add to Cart
         </Button>
 
-        <!-- Description -->
         <div class="relative">
           <div
             ref="description"
@@ -128,7 +127,6 @@
           />
         </div>
 
-        <!-- Product Details -->
         <div class="space-y-4 border-t pt-6">
           <div class="grid grid-cols-2 gap-4">
             <div>
@@ -160,6 +158,8 @@ import AppLink from '~/components/common/AppLink.vue'
 import type { QueryData } from '@supabase/supabase-js'
 import { Heart } from 'lucide-vue-next'
 import Skeleton from '~/components/ui/skeleton/Skeleton.vue'
+import { useCartStore } from '~/store/cart'
+import type { TablesInsert } from '~/types/database.types'
 
 const { toast } = useToast()
 const supabase = useSupabaseClient()
@@ -170,12 +170,14 @@ const isLoading = ref(false)
 const productWithVendorsCategoriesQuery = supabase
   .from('products')
   .select('*,vendors(name),primaryCategory:primaryCategoryId(name)')
-  .eq('slug', route.params.slug)
+  .eq('slug', route.params.slug as string)
   .single()
 
 type ProductWithVendorsCategories = QueryData<
   typeof productWithVendorsCategoriesQuery
 >
+
+type CartItem = TablesInsert<'cartItem'>
 
 const product = ref<ProductWithVendorsCategories | null>(null)
 
@@ -183,10 +185,22 @@ const showFullDescription = ref(false)
 const description = ref<HTMLElement | null>(null)
 const isOverflowing = ref(false)
 
+const cartStore = useCartStore()
 const { height } = useElementSize(description)
 
 const toggleDescription = () => {
   showFullDescription.value = !showFullDescription.value
+}
+
+function addToCart() {
+  if (!product.value?.inStock) return
+
+  const cartItem: CartItem = {
+    price: product.value?.unitPrice as number,
+    productId: product.value.id,
+    quantity: 1,
+  }
+  cartStore.addToCart(cartItem)
 }
 
 watch(height, () => {
