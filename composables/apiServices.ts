@@ -158,33 +158,33 @@ export const useApiServices = () => {
     return data
   }
 
-  async function deleteCart(cartId: string) {
+  async function deleteCartItems(cartId: string) {
     const { error: itemsError } = await supabase
       .from('cartItem')
       .delete()
       .eq('cartId', cartId)
     if (itemsError) {
-      toast({
-        title: 'Error deleting cart items',
-        description: itemsError.message,
-        variant: 'destructive',
-      })
       throw itemsError
     }
   }
 
-  async function deleteCartItems(cartId: string) {
+  async function deleteCart(cartId: string) {
     const { error: cartError } = await supabase
       .from('cart')
       .delete()
       .eq('id', cartId)
     if (cartError) {
-      toast({
-        title: 'Error deleting cart',
-        description: cartError.message,
-        variant: 'destructive',
-      })
       throw apiError(cartError)
+    }
+  }
+
+  async function deleteCartItemById(cartItemId: string) {
+    const { error } = await supabase
+      .from('cartItem')
+      .delete()
+      .eq('id', cartItemId)
+    if (error) {
+      throw apiError(error)
     }
   }
 
@@ -339,5 +339,6 @@ export const useApiServices = () => {
     fetchCartItemsByCartId,
     fetchCartByUserId,
     searchProduct,
+    deleteCartItemById,
   }
 }

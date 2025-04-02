@@ -11,7 +11,6 @@ export const useCartStore = defineStore(
     const cartItems = ref<CartItem[]>([])
     const cart = ref<Cart | null>(null)
     const user = useSupabaseUser()
-    const supabase = useSupabaseClient()
     const { toast } = useToast()
     const {
       deleteCartItems,
@@ -20,6 +19,7 @@ export const useCartStore = defineStore(
       updateCart,
       fetchCartItemsByCartId,
       fetchCartByUserId,
+      deleteCartItemById,
     } = useApiServices()
 
     const isMiniCartVisible = ref(false)
@@ -104,17 +104,14 @@ export const useCartStore = defineStore(
 
       // Delete from database if the item has an ID
       if (removedItem.id) {
-        const { error } = await supabase
-          .from('cartItem')
-          .delete()
-          .eq('id', removedItem.id)
-
-        if (error) {
+        try {
+          await deleteCartItemById(removedItem.id)
+        } catch (error) {
           toast({
-            title: 'Error deleting cart item',
-            description: error.message,
+            title: 'Error removing item from cart',
+            description: (error as Error).message,
           })
-          console.error('Error deleting cart item:', error)
+          console.error('Error removing item from cart:', error)
         }
       }
     }
