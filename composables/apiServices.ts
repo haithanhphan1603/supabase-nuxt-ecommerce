@@ -14,7 +14,9 @@ export const useApiServices = () => {
 
   const productWithVendorsQuery = supabase
     .from('products')
-    .select('name, unitPrice, primaryImage, vendors(name),currency,inStock')
+    .select(
+      'name, unitPrice, primaryImage, vendors(name), currency, inStock, slug',
+    )
 
   const apiError = (error: PostgrestError) => {
     return createError({

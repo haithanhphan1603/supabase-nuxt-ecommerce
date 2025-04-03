@@ -1,5 +1,5 @@
 <template>
-  <Card class="w-[420px] overflow-scroll max-h-[620px]">
+  <Card class="sm:w-[420px] w-[390px] overflow-scroll max-h-[620px] z-10">
     <CardHeader class="text-center border-b-slate-200 border-b">
       <CardTitle class="text-xl"
         >Your Viny<span class="text-violet-600">lata</span> Cart ({{

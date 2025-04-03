@@ -18,7 +18,7 @@ a {
   transition: color 0.3s ease-in-out;
 }
 .router-link-exact-active {
-  color: #7c3aed; /* Example active color, adjust as needed */
-  font-weight: 900; /* Example styling, adjust as needed */
+  color: #7c3aed;
+  font-weight: 900;
 }
 </style>

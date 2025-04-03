@@ -77,7 +77,7 @@ watchDebounced(
     <div class="px-4 sm:px-6 lg:px-16 mx-auto py-3">
       <div class="flex items-center">
         <div class="flex items-center flex-1">
-          <CommonAppIcon class="h-8 w-auto sm:h-10" />
+          <CommonAppIcon class="h-8 w-auto mx-auto sm:mx-0 sm:h-10" />
           <div class="hidden sm:block mx-4 lg:mx-8 flex-1">
             <CommonAppSearchBar v-model="searchKey" class="w-full" />
           </div>
@@ -104,6 +104,9 @@ watchDebounced(
               </div>
             </li>
 
+            <li>
+              <CommonAppColorMode class="p-2" />
+            </li>
             <li
               class="relative"
               @mouseenter.stop="showMiniCart"
@@ -124,20 +127,14 @@ watchDebounced(
                 class="absolute right-0 top-full"
               />
             </li>
-            <li>
-              <CommonAppColorMode class="p-2" />
-            </li>
-            <li class="sm:hidden">
-              <button
-                class="p-2 hover:text-violet-600"
-                @click="toggleMobileMenu"
-              >
-                <MenuIcon v-if="!mobileMenuOpen" class="h-6 w-6" />
-                <XIcon v-else class="h-6 w-6" />
-                <span class="sr-only">Menu</span>
-              </button>
-            </li>
           </ul>
+        </div>
+        <div class="sm:hidden order-first">
+          <button class="p-2 hover:text-violet-600" @click="toggleMobileMenu">
+            <MenuIcon v-if="!mobileMenuOpen" class="h-6 w-6" />
+            <XIcon v-else class="h-6 w-6" />
+            <span class="sr-only">Menu</span>
+          </button>
         </div>
       </div>
       <div class="sm:hidden mt-2">

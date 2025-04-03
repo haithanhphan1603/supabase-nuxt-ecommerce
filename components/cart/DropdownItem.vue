@@ -6,11 +6,13 @@
       <img class="object-contain" :src="product?.primaryImage as string" />
     </div>
     <div class="flex flex-col gap-0.5">
-      <CommonAppLink class="!font-bold" to="/test">
-        {{ product?.vendors?.name }}
-      </CommonAppLink>
       <div>
-        <h4>{{ product?.name }}</h4>
+        <CommonAppLink to="#" class="!font-bold text-sm">
+          {{ product?.vendors?.name }}
+        </CommonAppLink>
+        <CommonAppLink class="" :to="`/products/${product?.slug}`">
+          <h4>{{ product?.name }}</h4>
+        </CommonAppLink>
         <h5 class="font-bold text-sm">${{ cartItemPrice }}</h5>
       </div>
 

@@ -8,7 +8,7 @@
       />
       <div>
         <h3 class="font-bold">{{ product?.name }}</h3>
-        <p class="text-sm text-gray-600">{{ product?.vendors?.name }}</p>
+        <p class="text-gray-600">{{ product?.vendors?.name }}</p>
       </div>
     </div>
     <div class="flex w-1/2 justify-between items-center text-center">
