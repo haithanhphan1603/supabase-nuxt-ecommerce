@@ -1,11 +1,9 @@
 <template>
-  <Card
-    ref="myHoverableElement"
-    class="h-full border-none"
-    @touchstart="handleTouchStart"
-  >
+  <Card class="h-full border-none">
     <div
+      ref="myHoverableElement"
       class="rounded-lg border border-slate-200 bg-white text-slate-950 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-50 relative"
+      @touchstart="handleTouchStart"
     >
       <NuxtLink :to="`/products/${product.slug}`">
         <AspectRatio :ratio="1" class="flex justify-center items-center">

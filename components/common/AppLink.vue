@@ -6,7 +6,9 @@ defineProps<Props>()
 </script>
 
 <template>
-  <div class="hover:text-violet-600 font-normal text-base cursor-pointer">
+  <div
+    class="hover:text-violet-600 dark:hover:text-violet-600 font-normal text-base cursor-pointer"
+  >
     <nuxt-link :to>
       <slot />
     </nuxt-link>
