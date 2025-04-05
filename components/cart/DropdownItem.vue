@@ -1,16 +1,16 @@
 <template>
-  <Card class="flex gap-6 relative p-4 items-center">
+  <Card class="flex gap-6 max-sm:gap-2 relative p-4 items-center">
     <div
       class="flex justify-center items-center h-[100px] w-[100px] min-w-[100px]"
     >
       <img class="object-contain" :src="product?.primaryImage as string" />
     </div>
-    <div class="flex flex-col gap-0.5">
+    <div class="flex flex-col gap-0.5 w-1/2">
       <div>
         <CommonAppLink to="#" class="!font-bold text-sm">
           {{ product?.vendors?.name }}
         </CommonAppLink>
-        <CommonAppLink class="" :to="`/products/${product?.slug}`">
+        <CommonAppLink class="text-sm" :to="`/products/${product?.slug}`">
           <h4>{{ product?.name }}</h4>
         </CommonAppLink>
         <h5 class="font-bold text-sm">${{ cartItemPrice }}</h5>
@@ -25,7 +25,7 @@
         >
           <Minus class="h-3 w-3" />
         </Button>
-        <div class="border border-input w-10 text-center">
+        <div class="border border-input w-14 text-center">
           {{ item.quantity }}
         </div>
         <Button

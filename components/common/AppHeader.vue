@@ -151,18 +151,74 @@ watchDebounced(
       </nav>
     </div>
     <!-- Mobile menu -->
-    <div v-if="mobileMenuOpen" class="sm:hidden">
-      <nav class="px-4 py-2 space-y-1">
-        <CommonAppLink
-          v-for="link in links"
-          :key="link.label"
-          :to="link.to"
-          class="block px-3 py-2 text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800"
-          @click="mobileMenuOpen = false"
-        >
-          {{ link.label }}
-        </CommonAppLink>
-      </nav>
-    </div>
+    <transition name="fade">
+      <div v-if="mobileMenuOpen" class="sm:hidden">
+        <nav class="px-4 py-2 space-y-1">
+          <CommonAppLink
+            v-for="link in links"
+            :key="link.label"
+            :to="link.to"
+            class="block px-3 py-2 text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800"
+            @click="mobileMenuOpen = false"
+          >
+            {{ link.label }}
+          </CommonAppLink>
+        </nav>
+      </div>
+    </transition>
   </header>
 </template>
+
+<style lang="scss" scoped>
+.fade-enter-active {
+  animation: slide-in 0.6s cubic-bezier(0.17, 0.84, 0.44, 1.05) forwards;
+}
+
+.fade-leave-active {
+  animation: slide-out 0.6s cubic-bezier(0.6, -0.28, 0.74, 0.05) forwards;
+}
+
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+}
+.mobile-menu {
+  nav {
+    a {
+      opacity: 0;
+      transform: translateX(-10px);
+      animation: fade-slide-in 0.6s ease forwards;
+
+      @for $i from 1 through 10 {
+        &:nth-child(#{$i}) {
+          animation-delay: #{0.05 * $i}s;
+        }
+      }
+    }
+  }
+}
+
+@keyframes fade-slide-in {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+</style>

@@ -1,7 +1,7 @@
 <template>
-  <Card class="sm:w-[420px] w-[390px] overflow-scroll max-h-[620px] z-10">
-    <CardHeader class="text-center border-b-slate-200 border-b">
-      <CardTitle class="text-xl"
+  <Card class="sm:w-[420px] w-[300px] overflow-scroll max-h-[620px] z-10">
+    <CardHeader class="text-center p-3 border-b-slate-200 border-b">
+      <CardTitle class="text-md"
         >Your Viny<span class="text-violet-600">lata</span> Cart ({{
           totalQuantity
         }})</CardTitle
@@ -24,7 +24,9 @@
         </ul>
       </CardContent>
       <CardContent>
-        <div class="pt-4 border-b-slate-200 flex gap-2 justify-between">
+        <div
+          class="pt-2 border-b-slate-200 flex gap-2 justify-between max-sm:flex-col"
+        >
           <div class="flex items-center gap-1">
             <div class="rounded-full bg-violet-600 p-1">
               <Earth class="h-4 w-4" color="white" stroke-width="1" />
@@ -87,5 +89,3 @@ function navigateToAllProducts() {
   router.push('/collections/all')
 }
 </script>
-
-<style scoped></style>

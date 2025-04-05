@@ -1,7 +1,10 @@
 <template>
-  <Card class="h-full border-none">
+  <Card
+    ref="myHoverableElement"
+    class="h-full border-none"
+    @touchstart="handleTouchStart"
+  >
     <div
-      ref="myHoverableElement"
       class="rounded-lg border border-slate-200 bg-white text-slate-950 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-50 relative"
     >
       <NuxtLink :to="`/products/${product.slug}`">
@@ -13,7 +16,7 @@
           />
         </AspectRatio>
         <Button
-          v-if="isHovered"
+          v-show="showAddToCartButton"
           class="w-full font-extrabold absolute bottom-0 uppercase text-xs sm:text-sm"
           @click.stop.prevent="addToCart"
         >
@@ -78,6 +81,7 @@
 <script setup lang="ts">
 import { useElementHover, useWindowSize } from '@vueuse/core'
 import { HeartIcon, Loader } from 'lucide-vue-next'
+import { v4 as uuidv4 } from 'uuid'
 import Card from '../ui/card/Card.vue'
 import AspectRatio from '../ui/aspect-ratio/AspectRatio.vue'
 import { useCartStore } from '~/store/cart'
@@ -89,70 +93,85 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { v4 as uuidv4 } from 'uuid'
 
 type Product = Tables<'products'> & {
   vendors: { name: string }
 }
-
 type CartItem = TablesInsert<'cartItem'>
 
 interface Props {
   product: Product
 }
-
 const props = defineProps<Props>()
 
+// Store instances
 const cartStore = useCartStore()
 const wishlistStore = useWishlistStore()
-const user = useSupabaseUser()
-
 const { wishlist } = storeToRefs(wishlistStore)
 
-const myHoverableElement = ref<HTMLElement | null>(null)
-const isHovered = useElementHover(myHoverableElement)
-const isLoading = ref(false)
+// Composables and global state
+const user = useSupabaseUser()
 const colorMode = useColorMode()
+const { width } = useWindowSize()
+const { activeProductId, setActiveProduct } = useActiveTouchProduct()
+
+// Local refs
+const myHoverableElement = ref<HTMLElement | null>(null)
+const isLoading = ref(false)
+const isDialogOpen = ref(false)
+
+// Computed properties - responsive
+const isMobile = computed(() => width.value < 640)
+
+// Computed properties - hover states
+const isDesktopHovered = useElementHover(myHoverableElement)
+const isMobileHovered = computed(
+  () => activeProductId.value === props.product.id,
+)
+const showAddToCartButton = computed(
+  () => isDesktopHovered.value || isMobileHovered.value,
+)
+
+// Computed properties - UI
 const isOnWishList = computed(() =>
   wishlist.value.some((w) => w.product_id === props.product.id),
 )
-const isDialogOpen = ref(false)
+const heartIconColor = computed(() =>
+  colorMode.value === 'light' ? '#2d2d2d' : '#FFFFFF',
+)
 
-const { width } = useWindowSize()
-const isMobile = computed(() => width.value < 640)
+function handleTouchStart() {
+  if (isMobile.value) {
+    setActiveProduct(props.product.id)
+  }
+}
 
-const heartIconColor = computed(() => {
-  return colorMode.value === 'light' ? '#2d2d2d' : '#FFFFFF'
-})
-
+// Wishlist operations
 function toggleWishList() {
   if (!user.value) {
     isDialogOpen.value = true
     return
   }
-  if (isOnWishList.value) {
-    removeFromWishList()
-  } else {
-    addToWishList()
-  }
-}
 
+  isOnWishList.value ? removeFromWishList() : addToWishList()
+}
 function addToWishList() {
   wishlistStore.addToWishlist(props.product.id)
 }
-
 function removeFromWishList() {
   wishlistStore.removeFromWishList(props.product.id)
 }
 
 function addToCart() {
   isLoading.value = true
+
   const cartItem: CartItem = {
     price: props.product.unitPrice as number,
     productId: props.product.id,
     quantity: 1,
     id: uuidv4(),
   }
+
   cartStore.addToCart(cartItem)
   isLoading.value = false
 }
