@@ -72,4 +72,10 @@ export default defineNuxtConfig({
     port: 3000,
     host: '0.0.0.0',
   },
+  runtimeConfig: {
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    public: {
+      STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+    },
+  },
 })
