@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
+    "@stripe/stripe-js": "^7.0.0",
     "@supabase/supabase-js": "^2.43.2",
     "@vee-validate/nuxt": "^4.13.2",
     "@vueuse/core": "^10.11.0",
@@ -22,6 +23,7 @@
     "nuxt": "^3.11.2",
     "pinia": "^2.1.7",
     "radix-vue": "^1.9.1",
+    "stripe": "^18.0.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^10.0.0",
