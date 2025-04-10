@@ -40,6 +40,7 @@ const onSubmit = handleSubmit(async (values) => {
     password: values.password,
   })
   if (error) {
+    errorMsg.value = error.message
     throw createError({
       name: 'Login failed',
       message: error.message,
