@@ -2,18 +2,18 @@
   <AuthContainer is-login>
     <form class="space-y-6" @submit="onSubmit">
       <div class="grid w-full items-center gap-4">
-        <FormInput
+        <AuthInput
           name="email"
           label="Email"
           placeholder="Enter your email here"
           type="email"
-        ></FormInput>
-        <FormInput
+        ></AuthInput>
+        <AuthInput
           name="password"
           label="Password"
           placeholder="Enter your password here"
           type="password"
-        ></FormInput>
+        ></AuthInput>
       </div>
       <span v-if="errorMsg" class="text-sm text-red-500">{{ errorMsg }}</span>
       <Button class="w-full" type="submit">Login</Button>
