@@ -1,5 +1,5 @@
 <template>
-  <AuthCard>
+  <AuthContainer>
     <form class="space-y-6" @submit="onSubmit">
       <div class="grid w-full items-center gap-4">
         <AuthInput
@@ -36,7 +36,7 @@
       <span v-if="errorMsg" class="text-sm text-red-500">{{ errorMsg }}</span>
       <Button class="w-full" type="submit">Sign up</Button>
     </form>
-  </AuthCard>
+  </AuthContainer>
 </template>
 
 <script lang="ts" setup>

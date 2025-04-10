@@ -72,4 +72,10 @@ export default defineNuxtConfig({
     port: 3000,
     host: '0.0.0.0',
   },
+  runtimeConfig: {
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    public: {
+      stripePublishableKey: process.env.STRIPE_PUBLIC_KEY,
+    },
+  },
 })
