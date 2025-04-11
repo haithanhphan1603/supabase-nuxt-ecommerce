@@ -33,10 +33,16 @@
       >
       </CartDropdownItem>
     </template>
-    <div class="flex justify-end mt-4">
+    <div class="text-end mt-4">
       <div class="text-2xl font-bold">
         SUBTOTAL: {{ cart?.currency }} {{ totalPrice }}
       </div>
+      <Button
+        class="mt-4 font-bold px-8 max-sm:w-full"
+        @click="$router.push('/checkout')"
+      >
+        CHECKOUT
+      </Button>
     </div>
   </div>
 </template>

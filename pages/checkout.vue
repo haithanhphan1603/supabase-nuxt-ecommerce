@@ -162,7 +162,9 @@ const mergedItems = computed(() => {
   })
 })
 
-watch(cartItems, fetchProducts)
+watch(cartItems, fetchProducts, {
+  immediate: true,
+})
 
 onMounted(async () => {
   const config = useRuntimeConfig()
