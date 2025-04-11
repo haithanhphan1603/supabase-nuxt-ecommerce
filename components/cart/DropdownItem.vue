@@ -1,5 +1,5 @@
 <template>
-  <Card class="flex gap-6 max-sm:gap-2 relative p-4 items-center">
+  <Card class="flex gap-6 max-sm:gap-4 relative p-4 items-center">
     <div
       class="flex justify-center items-center h-[100px] w-[100px] min-w-[100px]"
     >

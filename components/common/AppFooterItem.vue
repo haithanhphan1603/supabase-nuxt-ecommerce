@@ -18,8 +18,7 @@ interface Props {
   footerLinks: { label: string; to: string }[]
 }
 
-const { width } = useWindowSize()
-const isMobile = computed(() => width.value < 640)
+const { isMobile } = useUtilities()
 
 defineProps<Props>()
 </script>

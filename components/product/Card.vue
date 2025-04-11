@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { useElementHover, useWindowSize } from '@vueuse/core'
+import { useElementHover } from '@vueuse/core'
 import { HeartIcon, Loader } from 'lucide-vue-next'
 import { v4 as uuidv4 } from 'uuid'
 import Card from '../ui/card/Card.vue'
@@ -110,16 +110,13 @@ const { wishlist } = storeToRefs(wishlistStore)
 // Composables and global state
 const user = useSupabaseUser()
 const colorMode = useColorMode()
-const { width } = useWindowSize()
+const { isMobile } = useUtilities()
 const { activeProductId, setActiveProduct } = useActiveTouchProduct()
 
 // Local refs
 const myHoverableElement = ref<HTMLElement | null>(null)
 const isLoading = ref(false)
 const isDialogOpen = ref(false)
-
-// Computed properties - responsive
-const isMobile = computed(() => width.value < 640)
 
 // Computed properties - hover states
 const isDesktopHovered = useElementHover(myHoverableElement)
@@ -174,5 +171,3 @@ function addToCart() {
   isLoading.value = false
 }
 </script>
-
-<style scoped></style>
