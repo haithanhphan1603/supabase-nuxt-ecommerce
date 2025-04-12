@@ -14,7 +14,8 @@
             v-for="(item, index) in cartItems"
             :key="item.productId ?? `fallback-${index}`"
           >
-            <CartDropdownItem
+            <CartItem
+              variant="dropdown"
               :item
               @decrease-quantity="decreaseItemQuantity(index)"
               @increase-quantity="increaseItemQuantity(index)"

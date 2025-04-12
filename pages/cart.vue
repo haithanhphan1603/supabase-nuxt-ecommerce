@@ -22,16 +22,17 @@
       />
     </template>
     <template v-else>
-      <CartDropdownItem
+      <CartItem
         v-for="(item, idx) in cartItems"
         :key="item.productId ?? `fallback-${idx}`"
+        variant="dropdown"
         class="px-0 py-4 border-x-0"
         :item="item"
         @decrease-quantity="decreaseItemQuantity(idx)"
         @increase-quantity="increaseItemQuantity(idx)"
         @remove-item="removeCartItem(idx)"
       >
-      </CartDropdownItem>
+      </CartItem>
     </template>
     <div class="text-end mt-4">
       <div class="text-2xl font-bold">

@@ -68,11 +68,11 @@
             </div>
             <div class="flex justify-between mb-2">
               <span class="text-gray-600">Shipping</span>
-              <span>{{ formatCurrency(cart?.shipping || 0) }}</span>
+              <span>{{ formatCurrency(0) }}</span>
             </div>
             <div class="flex justify-between mb-2">
               <span class="text-gray-600">Tax</span>
-              <span>{{ formatCurrency(cart?.tax || 0) }}</span>
+              <span>{{ formatCurrency(0) }}</span>
             </div>
             <div
               class="flex justify-between font-semibold text-lg mt-4 pt-4 border-t border-gray-200"
@@ -109,6 +109,7 @@ import { useCartStore } from '~/store/cart'
 import { Loader } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 import type { Database } from '~/types/database.types'
+import type { QueryData } from '@supabase/supabase-js'
 
 const isLoading = ref(false)
 const messages = ref<string[]>([])
@@ -120,28 +121,27 @@ const cartStore = useCartStore()
 const { cart, cartItems } = storeToRefs(cartStore)
 const supabase = useSupabaseClient<Database>()
 
-type Product = {
-  id: number
-  name: string
-  vendors: { name: string } | null
-  primaryImage: string | null
-}
+const productWithVendorQuery = supabase
+  .from('products')
+  .select('id, name, vendors(name), primaryImage')
+
+type Product = QueryData<typeof productWithVendorQuery>
 
 const productIds = computed(() => cartItems.value.map((item) => item.productId))
-const products = ref<Product[]>([])
+const products = ref<Product>([])
 
 const fetchProducts = async () => {
-  const { data, error } = await supabase
-    .from('products')
-    .select('id, name, vendors(name), primaryImage')
-    .in('id', productIds.value)
+  const { data, error } = await productWithVendorQuery.in(
+    'id',
+    productIds.value,
+  )
 
   if (error) {
     createError({ name: 'Product fetch error', message: error.message })
     return
   }
 
-  products.value = data ?? []
+  products.value = data
 }
 
 // Currency formatter

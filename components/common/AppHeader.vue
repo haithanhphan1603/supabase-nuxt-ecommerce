@@ -77,7 +77,7 @@ watchDebounced(
     <div class="px-4 sm:px-6 lg:px-16 mx-auto py-3">
       <div class="flex items-center">
         <div class="flex items-center flex-1">
-          <CommonAppIcon class="h-8 w-auto mx-auto sm:mx-0 sm:h-10" />
+          <CommonAppLogo class="h-8 w-auto mx-auto sm:mx-0 sm:h-10" />
           <div class="hidden sm:block mx-4 lg:mx-8 flex-1">
             <CommonAppSearchBar v-model="searchKey" class="w-full" />
           </div>
