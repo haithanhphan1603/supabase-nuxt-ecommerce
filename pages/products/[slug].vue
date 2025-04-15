@@ -177,7 +177,7 @@ type ProductWithVendorsCategories = QueryData<
   typeof productWithVendorsCategoriesQuery
 >
 
-type CartItem = TablesInsert<'cartItem'>
+type CartItem = TablesInsert<'cartItems'>
 
 const product = ref<ProductWithVendorsCategories | null>(null)
 
@@ -195,13 +195,13 @@ const toggleDescription = () => {
 function addToCart() {
   if (!product.value?.inStock) return
 
-  const cartItem: CartItem = {
+  const cartItems: CartItem = {
     price: product.value?.unitPrice as number,
     productId: product.value.id,
     quantity: 1,
     id: useId(),
   }
-  cartStore.addToCart(cartItem)
+  cartStore.addToCart(cartItems)
 }
 
 watch(height, () => {

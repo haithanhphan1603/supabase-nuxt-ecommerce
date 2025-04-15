@@ -74,31 +74,31 @@ import { useCartStore } from '~/store/cart'
 import { useWishlistStore } from '~/store/wishlist'
 import type { Tables, TablesInsert } from '~/types/database.types'
 import { Trash2 } from 'lucide-vue-next'
+import { toast } from '../ui/toast'
 
 interface Props {
   productId: number
 }
 
-type CartItem = TablesInsert<'cartItem'>
+type CartItem = TablesInsert<'cartItems'>
 type Product = Tables<'products'>
 
 const props = defineProps<Props>()
 const product = ref<Partial<Product> | null>(null)
 
-const { fetchProductById } = useApiServices()
 const cartStore = useCartStore()
 const wishlistStore = useWishlistStore()
 
 function addToCart() {
   if (!product.value?.inStock) return
 
-  const cartItem: CartItem = {
+  const cartItems: CartItem = {
     price: product.value?.unitPrice as number,
     productId: props.productId,
     quantity: 1,
     id: useId(),
   }
-  cartStore.addToCart(cartItem)
+  cartStore.addToCart(cartItems)
 }
 
 function removeFromWishlist() {
@@ -106,7 +106,18 @@ function removeFromWishlist() {
 }
 
 async function fetchProduct() {
-  product.value = await fetchProductById(props.productId)
+  const { data, error } = await useFetch(
+    `/api/supabase/products/${props.productId}`,
+  )
+  if (error.value) {
+    toast({
+      title: error.value.name,
+      description: error.value.message,
+      variant: 'destructive',
+    })
+    return
+  }
+  product.value = data.value as Partial<Product> | null
 }
 
 fetchProduct()

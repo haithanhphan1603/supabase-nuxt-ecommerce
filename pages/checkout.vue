@@ -83,15 +83,18 @@
           </div>
         </div>
 
-        <div class="mt-6 bg-white sm:p-6 rounded-lg">
+        <div class="mt-6 sm:p-6 rounded-lg">
           <h4 class="font-medium mb-2">Secure Checkout</h4>
-          <p class="text-sm text-gray-600">
-            Your payment information is processed securely. We do not store
-            credit card details.
+          <p class="text-sm text-slate-400">
+            You can test your payment with the following test card numbers with
+            any future expiration date and any CVC:
           </p>
-          <div class="mt-4 flex items-center">
-            <span class="text-sm text-gray-600">Secure SSL Encryption</span>
-          </div>
+          <ul class="list-disc pl-5 mt-2 text-sm text-slate-400">
+            <li>Visa: 4242 4242 4242 4242</li>
+            <li>MasterCard: 5555 5555 5555 4444</li>
+            <li>American Express: 3782 8224 6310 005</li>
+            <li>Discover: 6011 1111 1111 1117</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -110,6 +113,10 @@ import { Loader } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 import type { Database } from '~/types/database.types'
 import type { QueryData } from '@supabase/supabase-js'
+
+definePageMeta({
+  middleware: 'auth',
+})
 
 const isLoading = ref(false)
 const messages = ref<string[]>([])
@@ -152,12 +159,12 @@ const formatCurrency = (amount: number) =>
   }).format(amount)
 
 const mergedItems = computed(() => {
-  return cartItems.value.map((cartItem) => {
-    const product = products.value.find((p) => p.id === cartItem.productId)
+  return cartItems.value.map((cartItems) => {
+    const product = products.value.find((p) => p.id === cartItems.productId)
     return {
       ...product,
-      quantity: cartItem.quantity,
-      price: cartItem.price,
+      quantity: cartItems.quantity,
+      price: cartItems.price,
     }
   })
 })
