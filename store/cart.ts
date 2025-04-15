@@ -93,7 +93,6 @@ export const useCartStore = defineStore(
 
       try {
         const existingCart = await fetchCartByUserId(user.value.id)
-
         if (existingCart) {
           cart.value = existingCart
           const items = await fetchCartItemsByCartId(existingCart.id)
@@ -129,16 +128,14 @@ export const useCartStore = defineStore(
         (i) => i.productId === item.productId,
       )
 
-      if (existingIndex >= 0) {
+      if (existingIndex !== -1) {
         cartItems.value[existingIndex].quantity += item.quantity
       } else {
-        const currentCart = ensureCart()
         cartItems.value.push({
           ...item,
-          cartId: currentCart?.id || '',
+          cartId: cart.value?.id || null,
         })
       }
-
       scheduleUpdate()
     }
 
@@ -148,8 +145,7 @@ export const useCartStore = defineStore(
 
       scheduleUpdate()
 
-      // If the item exists in the database, delete it
-      if (removedItem.id) {
+      if (removedItem.id && user.value) {
         deleteCartItem(removedItem.id)
       }
     }
@@ -165,15 +161,6 @@ export const useCartStore = defineStore(
         scheduleUpdate()
       } else {
         removeCartItem(index)
-      }
-    }
-
-    function clearCart() {
-      cartItems.value = []
-      if (cart.value) {
-        cart.value.totalprice = 0
-        cart.value.updatedat = new Date().toISOString()
-        scheduleUpdate()
       }
     }
 
@@ -200,7 +187,6 @@ export const useCartStore = defineStore(
       removeCartItem,
       increaseItemQuantity,
       decreaseItemQuantity,
-      clearCart,
     }
   },
   {
