@@ -109,9 +109,8 @@ export const useCartStore = defineStore(
 
     async function deleteCartItem(itemId: string) {
       try {
-        await useFetch('/api/supabase/cart-items/:id', {
+        await useFetch(`/api/supabase/cart-items/${itemId}`, {
           method: 'DELETE',
-          params: { id: itemId },
         })
       } catch (error) {
         toast({

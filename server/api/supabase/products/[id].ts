@@ -1,8 +1,8 @@
-import { serverSupabaseClient } from '#supabase/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '~/types/database.types'
 export default defineEventHandler(async (event) => {
   const id = parseInt(event.context.params.id) as number
-  const client = await serverSupabaseClient<Database>(event)
+  const client = event.context.supabase as SupabaseClient<Database>
 
   const { data, error } = await client
     .from('products')
