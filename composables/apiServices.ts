@@ -160,47 +160,30 @@ export const useApiServices = () => {
     return data
   }
 
-  async function deleteCartItems(cartId: string) {
-    const { error: itemsError } = await supabase
-      .from('cartItems')
-      .delete()
-      .eq('cartId', cartId)
-    if (itemsError) {
-      throw itemsError
-    }
-  }
-
-  async function deleteCart(cartId: string) {
-    const { error: cartError } = await supabase
-      .from('cart')
-      .delete()
-      .eq('id', cartId)
-    if (cartError) {
-      throw apiError(cartError)
-    }
-  }
-
   async function deleteCartItemById(cartItemId: string) {
-    const { error } = await supabase
-      .from('cartItems')
-      .delete()
-      .eq('id', cartItemId)
-    if (error) {
-      throw apiError(error)
+    const { error } = await useFetch(`/api/supabase/cart-items/${cartItemId}`, {
+      method: 'DELETE',
+    })
+    if (error.value) {
+      toast({
+        title: 'Error deleting cart item',
+        description: error.value.message,
+        variant: 'destructive',
+      })
     }
   }
 
   async function updateCartItems(cartItems: CartItem[]) {
-    const { error: itemsError } = await supabase
-      .from('cartItems')
-      .upsert(cartItems)
-    if (itemsError) {
+    const { error } = await useFetch('/api/supabase/cart-items', {
+      method: 'POST',
+      body: cartItems,
+    })
+    if (error.value) {
       toast({
         title: 'Error updating cart items',
-        description: itemsError.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(itemsError)
     }
   }
 
@@ -217,92 +200,90 @@ export const useApiServices = () => {
   }
 
   async function getWishlistItems(userId: string) {
-    const { data, error } = await supabase
-      .from('wishlist')
-      .select('*')
-      .eq('user_id', userId)
-    if (error) {
-      console.error(error)
+    const { data, error } = await useFetch(`/api/supabase/wishlist/${userId}`)
+    if (error.value) {
       toast({
-        title: 'Error fetching wishlist',
-        description: error.message,
+        title: 'Error fetching wishlist items',
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
+      return null
     }
-    return data
+    return data.value
   }
 
   async function deleteWishlistItemApi(userId: string, productId: number) {
-    const { error } = await supabase
-      .from('wishlist')
-      .delete()
-      .eq('user_id', userId)
-      .eq('product_id', productId)
-
-    if (error) {
-      console.error('Error deleting wishlist item:', error)
+    const { data, error } = await useFetch('/api/supabase/wishlist', {
+      method: 'DELETE',
+      body: {
+        userId,
+        productId,
+      },
+    })
+    if (error.value) {
       toast({
         title: 'Error deleting wishlist item',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
+    }
+    if (data.value?.success === true) {
+      toast({
+        title: 'Deleted from wishlist',
+        description: 'Product has been removed from your wishlist.',
+        variant: 'success',
+      })
     }
   }
 
   async function addToWishlistApi(userId: string, productId: number) {
-    const { error } = await supabase
-      .from('wishlist')
-      .insert([{ user_id: userId, product_id: productId }])
-    if (error) {
-      console.error('Error adding to wishlist:', error)
+    const { data, error } = await useFetch('/api/supabase/wishlist', {
+      method: 'POST',
+      body: {
+        userId,
+        productId,
+      },
+    })
+    if (error.value) {
       toast({
         title: 'Error adding to wishlist',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
+    }
+    if (data.value?.success === true) {
+      toast({
+        title: 'Added to wishlist',
+        description: 'Product has been added to your wishlist.',
+        variant: 'success',
+      })
     }
   }
 
   async function fetchCartItemsByCartId(cartId: string) {
-    const { data, error } = await supabase
-      .from('cartItems')
-      .select('*')
-      .eq('cartId', cartId)
-
-    if (error) {
-      console.error('Error fetching cart items:', error)
+    const { data, error } = await useFetch(`/api/supabase/cart/${cartId}/items`)
+    if (error.value) {
       toast({
         title: 'Error fetching cart items',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
+      return null
     }
-    return data
+    return data.value
   }
 
   async function fetchCartByUserId(userId: string) {
-    const { data, error } = await supabase
-      .from('cart')
-      .select('*')
-      .eq('createdby', userId as string)
-      .order('updatedat', { ascending: false })
-      .limit(1)
-      .single()
-
-    if (error && error.code !== 'PGRST116') {
-      console.error('Error fetching cart:', error)
+    const { data, error } = useFetch(`/api/supabase/cart/${userId}`)
+    if (error.value) {
       toast({
         title: 'Error fetching cart',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
+      return null
     }
-    return data
+    return data.value
   }
 
   async function searchProduct(productName: string) {
@@ -330,8 +311,6 @@ export const useApiServices = () => {
     getProductsByCategory,
     getCategoryBySlug,
     getTotalProductsByCategory,
-    deleteCart,
-    deleteCartItems,
     updateCartItems,
     updateCart,
     getWishlistItems,
