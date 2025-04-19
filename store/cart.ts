@@ -2,7 +2,7 @@ import type { PostgrestError } from '@supabase/supabase-js'
 import { useToast } from '~/components/ui/toast'
 import type { TablesInsert } from '~/types/database.types'
 
-type CartItem = TablesInsert<'cartItem'>
+type CartItem = TablesInsert<'cartItems'>
 type Cart = TablesInsert<'cart'>
 
 export const useCartStore = defineStore(
@@ -13,8 +13,6 @@ export const useCartStore = defineStore(
     const user = useSupabaseUser()
     const { toast } = useToast()
     const {
-      deleteCartItems,
-      deleteCart,
       updateCartItems,
       updateCart,
       fetchCartItemsByCartId,
@@ -82,12 +80,9 @@ export const useCartStore = defineStore(
       )
 
       if (existingItemIndex >= 0) {
-        // Update quantity for existing item
         currentCartItems[existingItemIndex].quantity += item.quantity
-        // Update price (base item price × quantity)
         currentCartItems[existingItemIndex].price = item.price
       } else {
-        // Ensure the new item has the correct cartId
         item.cartId = cart.value?.id || ''
         currentCartItems.push(item)
       }
@@ -102,7 +97,6 @@ export const useCartStore = defineStore(
       cartItems.value = [...currentCartItems]
       createOrUpdateCart()
 
-      // Delete from database if the item has an ID
       if (removedItem.id) {
         try {
           await deleteCartItemById(removedItem.id)
@@ -114,26 +108,6 @@ export const useCartStore = defineStore(
           console.error('Error removing item from cart:', error)
         }
       }
-    }
-
-    async function clearCart() {
-      if (cart.value) {
-        try {
-          await Promise.all([
-            deleteCart(cart.value.id as string),
-            deleteCartItems(cart.value.id as string),
-          ])
-        } catch (error) {
-          toast({
-            title: 'Error clearing cart',
-            description: (error as Error).message,
-          })
-          console.error('Error clearing cart:', error)
-        }
-      }
-
-      cartItems.value = []
-      cart.value = null
     }
 
     function increaseItemQuantity(idx: number) {
@@ -157,12 +131,8 @@ export const useCartStore = defineStore(
 
     async function syncCartWithUser() {
       try {
-<<<<<<< HEAD
-        const existingCart = await fetchCartByUserId(user.value.id)
-=======
         const existingCart = await fetchCartByUserId(user.value?.id as string)
 
->>>>>>> parent of 7f3663e (update typing and optimze cart)
         if (existingCart) {
           cart.value = existingCart
           const items = await fetchCartItemsByCartId(existingCart.id)
@@ -180,74 +150,15 @@ export const useCartStore = defineStore(
       }
     }
 
-<<<<<<< HEAD
-    async function deleteCartItem(itemId: string) {
-      try {
-        await useFetch(`/api/supabase/cart-items/${itemId}`, {
-          method: 'DELETE',
-        })
-      } catch (error) {
-        toast({
-          title: 'Error removing item',
-          description: (error as Error).message,
-        })
-        console.error('Error removing item:', error)
-      }
-    }
-
-    // Cart manipulation functions
-    function addToCart(item: CartItem) {
-      const existingIndex = cartItems.value.findIndex(
-        (i) => i.productId === item.productId,
-      )
-
-      if (existingIndex !== -1) {
-        cartItems.value[existingIndex].quantity += item.quantity
-      } else {
-        cartItems.value.push({
-          ...item,
-          cartId: cart.value?.id || null,
-        })
-      }
-      scheduleUpdate()
-    }
-
-    function removeCartItem(index: number) {
-      const removedItem = cartItems.value[index]
-      cartItems.value.splice(index, 1)
-
-      scheduleUpdate()
-
-      if (removedItem.id && user.value) {
-        deleteCartItem(removedItem.id)
-      }
-    }
-
-    function increaseItemQuantity(index: number) {
-      cartItems.value[index].quantity += 1
-      scheduleUpdate()
-    }
-
-    function decreaseItemQuantity(index: number) {
-      if (cartItems.value[index].quantity > 1) {
-        cartItems.value[index].quantity -= 1
-        scheduleUpdate()
-      } else {
-        removeCartItem(index)
-      }
-    }
-
-    // Initialize cart when user changes
-=======
     // Watch for user changes to sync cart
->>>>>>> parent of 7f3663e (update typing and optimze cart)
     watch(
       user,
       async (newUser) => {
         if (newUser) {
           await syncCartWithUser()
         } else {
-          await clearCart()
+          cartItems.value = []
+          cart.value = null
         }
       },
       {
@@ -260,16 +171,11 @@ export const useCartStore = defineStore(
       addToCart,
       removeCartItem,
       increaseItemQuantity,
-<<<<<<< HEAD
-      decreaseItemQuantity,
-=======
-      clearCart,
       decreaseItemQuantity,
       totalQuantity,
       isMiniCartVisible,
       cart,
       syncCartWithUser,
->>>>>>> parent of 7f3663e (update typing and optimze cart)
     }
   },
   {

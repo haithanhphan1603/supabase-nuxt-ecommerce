@@ -5,7 +5,7 @@ import type { CollectionSearchParams } from '~/types/search.types'
 import { SortBy } from '~/types/search.types'
 
 const PRODUCTS_CATEGORIES = 'products_categories'
-type CartItem = TablesInsert<'cartItem'>
+type CartItem = TablesInsert<'cartItems'>
 type Cart = TablesInsert<'cart'>
 
 export const useApiServices = () => {
@@ -162,7 +162,7 @@ export const useApiServices = () => {
 
   async function deleteCartItems(cartId: string) {
     const { error: itemsError } = await supabase
-      .from('cartItem')
+      .from('cartItems')
       .delete()
       .eq('cartId', cartId)
     if (itemsError) {
@@ -182,7 +182,7 @@ export const useApiServices = () => {
 
   async function deleteCartItemById(cartItemId: string) {
     const { error } = await supabase
-      .from('cartItem')
+      .from('cartItems')
       .delete()
       .eq('id', cartItemId)
     if (error) {
@@ -192,7 +192,7 @@ export const useApiServices = () => {
 
   async function updateCartItems(cartItems: CartItem[]) {
     const { error: itemsError } = await supabase
-      .from('cartItem')
+      .from('cartItems')
       .upsert(cartItems)
     if (itemsError) {
       toast({
@@ -268,7 +268,7 @@ export const useApiServices = () => {
 
   async function fetchCartItemsByCartId(cartId: string) {
     const { data, error } = await supabase
-      .from('cartItem')
+      .from('cartItems')
       .select('*')
       .eq('cartId', cartId)
 

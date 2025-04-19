@@ -79,7 +79,7 @@ interface Props {
   productId: number
 }
 
-type CartItem = TablesInsert<'cartItem'>
+type CartItem = TablesInsert<'cartItems'>
 type Product = Tables<'products'>
 
 const props = defineProps<Props>()
@@ -96,7 +96,7 @@ function addToCart() {
     price: product.value?.unitPrice as number,
     productId: props.productId,
     quantity: 1,
-    id: useId(),
+    id: crypto.randomUUID(),
   }
   cartStore.addToCart(cartItem)
 }

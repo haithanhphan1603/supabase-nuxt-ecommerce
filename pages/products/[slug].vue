@@ -177,7 +177,7 @@ type ProductWithVendorsCategories = QueryData<
   typeof productWithVendorsCategoriesQuery
 >
 
-type CartItem = TablesInsert<'cartItem'>
+type CartItem = TablesInsert<'cartItems'>
 
 const product = ref<ProductWithVendorsCategories | null>(null)
 
@@ -199,7 +199,7 @@ function addToCart() {
     price: product.value?.unitPrice as number,
     productId: product.value.id,
     quantity: 1,
-    id: useId(),
+    id: crypto.randomUUID(),
   }
   cartStore.addToCart(cartItem)
 }

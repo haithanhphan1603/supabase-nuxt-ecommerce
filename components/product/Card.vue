@@ -94,7 +94,7 @@ import {
 type Product = Tables<'products'> & {
   vendors: { name: string }
 }
-type CartItem = TablesInsert<'cartItem'>
+type CartItem = TablesInsert<'cartItems'>
 
 interface Props {
   product: Product
@@ -163,7 +163,7 @@ function addToCart() {
     price: props.product.unitPrice as number,
     productId: props.product.id,
     quantity: 1,
-    id: useId(),
+    id: crypto.randomUUID(),
   }
 
   cartStore.addToCart(cartItem)
