@@ -82,7 +82,7 @@ const supabase = useSupabaseClient()
 const slug = useRoute().params.slug
 const { getProductsByCategory, getTotalProductsByCategory } = useApiServices()
 
-const collectionRef = ref<HTMLElement | null>(null)
+const collectionRef = useTemplateRef<HTMLElement>('collectionRef')
 
 const category = ref<Tables<'categories'>>()
 const products = ref<Tables<'products'>[]>([])

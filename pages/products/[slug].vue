@@ -160,7 +160,6 @@ import { Heart } from 'lucide-vue-next'
 import Skeleton from '~/components/ui/skeleton/Skeleton.vue'
 import { useCartStore } from '~/store/cart'
 import type { TablesInsert } from '~/types/database.types'
-import { v4 as uuidv4 } from 'uuid'
 
 const { toast } = useToast()
 const supabase = useSupabaseClient()
@@ -178,7 +177,7 @@ type ProductWithVendorsCategories = QueryData<
   typeof productWithVendorsCategoriesQuery
 >
 
-type CartItem = TablesInsert<'cartItem'>
+type CartItem = TablesInsert<'cartItems'>
 
 const product = ref<ProductWithVendorsCategories | null>(null)
 
@@ -200,7 +199,7 @@ function addToCart() {
     price: product.value?.unitPrice as number,
     productId: product.value.id,
     quantity: 1,
-    id: uuidv4(),
+    id: crypto.randomUUID(),
   }
   cartStore.addToCart(cartItem)
 }

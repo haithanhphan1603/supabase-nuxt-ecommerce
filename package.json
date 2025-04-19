@@ -16,6 +16,7 @@
     "@stripe/stripe-js": "^7.0.0",
     "@supabase/supabase-js": "^2.43.2",
     "@vee-validate/nuxt": "^4.13.2",
+    "@vee-validate/yup": "^4.15.0",
     "@vueuse/core": "^10.11.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -26,11 +27,10 @@
     "stripe": "^18.0.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
-    "uuid": "^10.0.0",
-    "vee-validate": "^4.13.2",
+    "vee-validate": "^4.15.0",
     "vue": "^3.5.13",
     "vue-router": "^4.3.2",
-    "yup": "^1.4.0"
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@iconify-json/radix-icons": "^1.1.14",
@@ -43,7 +43,6 @@
     "@nuxtjs/supabase": "^1.2.2",
     "@nuxtjs/tailwindcss": "^6.12.1",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
-    "@types/uuid": "^10.0.0",
     "@vueuse/nuxt": "^10.9.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",

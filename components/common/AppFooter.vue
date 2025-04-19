@@ -64,7 +64,7 @@ const toggleSection = (section: string | number) => {
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8 sm:gap-4"
       >
         <div class="flex flex-col gap-2">
-          <CommonAppIcon />
+          <CommonAppLogo />
           <a class="font-extralight">therecord@vinylata.com</a>
           <div class="flex gap-2 mt-2">
             <a

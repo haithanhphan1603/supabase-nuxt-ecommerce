@@ -79,7 +79,6 @@
 <script setup lang="ts">
 import { useElementHover } from '@vueuse/core'
 import { HeartIcon, Loader } from 'lucide-vue-next'
-import { v4 as uuidv4 } from 'uuid'
 import Card from '../ui/card/Card.vue'
 import AspectRatio from '../ui/aspect-ratio/AspectRatio.vue'
 import { useCartStore } from '~/store/cart'
@@ -95,7 +94,7 @@ import {
 type Product = Tables<'products'> & {
   vendors: { name: string }
 }
-type CartItem = TablesInsert<'cartItem'>
+type CartItem = TablesInsert<'cartItems'>
 
 interface Props {
   product: Product
@@ -164,7 +163,7 @@ function addToCart() {
     price: props.product.unitPrice as number,
     productId: props.product.id,
     quantity: 1,
-    id: uuidv4(),
+    id: crypto.randomUUID(),
   }
 
   cartStore.addToCart(cartItem)
