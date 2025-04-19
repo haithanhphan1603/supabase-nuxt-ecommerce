@@ -1,7 +1,7 @@
 import type { QueryData } from '@supabase/supabase-js'
 import type { TablesInsert } from '~/types/database.types'
 
-export const useCart = (item: Ref<TablesInsert<'cartItems'>>) => {
+export const useCart = (item: Ref<TablesInsert<'cartItem'>>) => {
   type ProductWithVendor = QueryData<typeof productWithVendorsQuery>[number]
   const { fetchProductById, productWithVendorsQuery } = useApiServices()
   const product = ref<ProductWithVendor>()

@@ -5,7 +5,7 @@ import type { CollectionSearchParams } from '~/types/search.types'
 import { SortBy } from '~/types/search.types'
 
 const PRODUCTS_CATEGORIES = 'products_categories'
-type CartItem = TablesInsert<'cartItems'>
+type CartItem = TablesInsert<'cartItem'>
 type Cart = TablesInsert<'cart'>
 
 export const useApiServices = () => {
@@ -94,6 +94,24 @@ export const useApiServices = () => {
     return data.map((item) => item.products)
   }
 
+  async function getCategoryBySlug(slug: string) {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('slug', slug)
+    if (error) {
+      console.error(error)
+      toast({
+        title: 'Error fetching category',
+        description: error.message,
+        variant: 'destructive',
+      })
+      throw apiError(error)
+    } else {
+      return data[0]
+    }
+  }
+
   async function getTotalProductsByCategory(
     categoryId: number,
     searchInfo: CollectionSearchParams,
@@ -142,20 +160,39 @@ export const useApiServices = () => {
     return data
   }
 
+  async function deleteCartItems(cartId: string) {
+    const { error: itemsError } = await supabase
+      .from('cartItem')
+      .delete()
+      .eq('cartId', cartId)
+    if (itemsError) {
+      throw itemsError
+    }
+  }
+
   async function deleteCart(cartId: string) {
     const { error: cartError } = await supabase
       .from('cart')
       .delete()
       .eq('id', cartId)
-
     if (cartError) {
       throw apiError(cartError)
     }
   }
 
+  async function deleteCartItemById(cartItemId: string) {
+    const { error } = await supabase
+      .from('cartItem')
+      .delete()
+      .eq('id', cartItemId)
+    if (error) {
+      throw apiError(error)
+    }
+  }
+
   async function updateCartItems(cartItems: CartItem[]) {
     const { error: itemsError } = await supabase
-      .from('cartItems')
+      .from('cartItem')
       .upsert(cartItems)
     if (itemsError) {
       toast({
@@ -231,7 +268,7 @@ export const useApiServices = () => {
 
   async function fetchCartItemsByCartId(cartId: string) {
     const { data, error } = await supabase
-      .from('cartItems')
+      .from('cartItem')
       .select('*')
       .eq('cartId', cartId)
 
@@ -291,8 +328,10 @@ export const useApiServices = () => {
   return {
     productWithVendorsQuery,
     getProductsByCategory,
+    getCategoryBySlug,
     getTotalProductsByCategory,
     deleteCart,
+    deleteCartItems,
     updateCartItems,
     updateCart,
     getWishlistItems,
@@ -302,5 +341,6 @@ export const useApiServices = () => {
     fetchCartItemsByCartId,
     fetchCartByUserId,
     searchProduct,
+    deleteCartItemById,
   }
 }

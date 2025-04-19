@@ -105,7 +105,7 @@ import type { TablesInsert } from '~/types/database.types'
 import { useCart } from '~/composables/cartProduct'
 
 interface Props {
-  item: TablesInsert<'cartItems'>
+  item: TablesInsert<'cartItem'>
   variant?: 'dropdown' | 'full'
 }
 

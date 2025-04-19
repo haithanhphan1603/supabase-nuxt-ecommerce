@@ -2,7 +2,7 @@ import type { PostgrestError } from '@supabase/supabase-js'
 import { useToast } from '~/components/ui/toast'
 import type { TablesInsert } from '~/types/database.types'
 
-type CartItem = TablesInsert<'cartItems'>
+type CartItem = TablesInsert<'cartItem'>
 type Cart = TablesInsert<'cart'>
 
 export const useCartStore = defineStore(
@@ -12,101 +12,175 @@ export const useCartStore = defineStore(
     const cart = ref<Cart | null>(null)
     const user = useSupabaseUser()
     const { toast } = useToast()
-    const isUpdating = ref(false)
-
     const {
+      deleteCartItems,
+      deleteCart,
       updateCartItems,
       updateCart,
       fetchCartItemsByCartId,
       fetchCartByUserId,
+      deleteCartItemById,
     } = useApiServices()
 
-    const totalQuantity = computed(() =>
-      cartItems.value.reduce((acc, item) => acc + item.quantity, 0),
-    )
+    const isMiniCartVisible = ref(false)
 
-    const totalPrice = computed(() =>
-      cartItems.value.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0,
-      ),
-    )
+    const totalQuantity = computed(() => {
+      return cartItems.value.reduce((acc, item) => acc + item.quantity, 0)
+    })
 
-    function ensureCart() {
-      if (!cart.value && user.value) {
-        const now = new Date().toISOString()
-        cart.value = {
-          totalprice: 0,
-          currency: 'USD',
-          createdat: now,
-          updatedat: now,
-          createdby: user.value.id,
-        }
-      }
-      return cart.value
-    }
-
-    // Schedule database update with debounce
-    function scheduleUpdate() {
-      useDebounceFn(() => {
-        persistCartToDatabase()
-      }, 500)
-    }
-
-    async function persistCartToDatabase() {
-      if (!user.value || isUpdating.value) return
-
+    async function createOrUpdateCart() {
       try {
-        isUpdating.value = true
+        if (!cart.value) {
+          cart.value = createNewCart(user.value?.id as string)
+        }
 
-        // Make sure we have a cart
-        const currentCart = ensureCart()
-        if (!currentCart) return
+        // Update the cart total price based on current items
+        cart.value.totalprice = calculateTotalPrice(cartItems.value)
+        cart.value.updatedat = new Date().toISOString()
 
-        // Update cart price and timestamp
-        currentCart.totalprice = totalPrice.value
-        currentCart.updatedat = new Date().toISOString()
-
-        // Ensure cart items have correct cartId
-        const itemsToUpdate = cartItems.value.map((item) => ({
+        // Ensure all cart items have the correct cartId
+        const aggregatedCartItems = cartItems.value.map((item) => ({
           ...item,
-          cartId: currentCart.id,
+          cartId: cart.value!.id,
         }))
 
-        await Promise.all([
-          updateCart(currentCart),
-          updateCartItems(itemsToUpdate),
-        ])
+        if (user.value) {
+          await Promise.all([
+            updateCart(cart.value),
+            updateCartItems(aggregatedCartItems),
+          ])
+        }
       } catch (error) {
         toast({
           title: 'Error updating cart',
           description: (error as PostgrestError).message,
         })
-        console.error('Cart update error:', error)
-      } finally {
-        isUpdating.value = false
       }
     }
 
-    async function loadUserCart() {
-      if (!user.value) return
+    function createNewCart(createdBy: string) {
+      const now = new Date().toISOString()
+      return {
+        totalprice: 0,
+        currency: '$',
+        createdat: now,
+        updatedat: now,
+        createdby: createdBy,
+      }
+    }
 
+    function calculateTotalPrice(
+      items: Array<{ price: number; quantity: number }>,
+    ) {
+      return items.reduce((acc, item) => acc + item.price * item.quantity, 0)
+    }
+
+    function addToCart(item: CartItem) {
+      const currentCartItems = [...cartItems.value]
+      const existingItemIndex = currentCartItems.findIndex(
+        (i) => i.productId === item.productId,
+      )
+
+      if (existingItemIndex >= 0) {
+        // Update quantity for existing item
+        currentCartItems[existingItemIndex].quantity += item.quantity
+        // Update price (base item price × quantity)
+        currentCartItems[existingItemIndex].price = item.price
+      } else {
+        // Ensure the new item has the correct cartId
+        item.cartId = cart.value?.id || ''
+        currentCartItems.push(item)
+      }
+
+      cartItems.value = [...currentCartItems]
+      createOrUpdateCart()
+    }
+
+    async function removeCartItem(index: number) {
+      const currentCartItems = [...cartItems.value]
+      const removedItem = currentCartItems.splice(index, 1)[0]
+      cartItems.value = [...currentCartItems]
+      createOrUpdateCart()
+
+      // Delete from database if the item has an ID
+      if (removedItem.id) {
+        try {
+          await deleteCartItemById(removedItem.id)
+        } catch (error) {
+          toast({
+            title: 'Error removing item from cart',
+            description: (error as Error).message,
+          })
+          console.error('Error removing item from cart:', error)
+        }
+      }
+    }
+
+    async function clearCart() {
+      if (cart.value) {
+        try {
+          await Promise.all([
+            deleteCart(cart.value.id as string),
+            deleteCartItems(cart.value.id as string),
+          ])
+        } catch (error) {
+          toast({
+            title: 'Error clearing cart',
+            description: (error as Error).message,
+          })
+          console.error('Error clearing cart:', error)
+        }
+      }
+
+      cartItems.value = []
+      cart.value = null
+    }
+
+    function increaseItemQuantity(idx: number) {
+      const currentCartItems = [...cartItems.value]
+      currentCartItems[idx].quantity += 1
+      cartItems.value = [...currentCartItems]
+      createOrUpdateCart()
+    }
+
+    function decreaseItemQuantity(idx: number) {
+      const currentCartItems = [...cartItems.value]
+      if (currentCartItems[idx].quantity > 1) {
+        currentCartItems[idx].quantity -= 1
+      } else {
+        // Remove the item if quantity would drop to 0
+        currentCartItems.splice(idx, 1)
+      }
+      cartItems.value = [...currentCartItems]
+      createOrUpdateCart()
+    }
+
+    async function syncCartWithUser() {
       try {
+<<<<<<< HEAD
         const existingCart = await fetchCartByUserId(user.value.id)
+=======
+        const existingCart = await fetchCartByUserId(user.value?.id as string)
+
+>>>>>>> parent of 7f3663e (update typing and optimze cart)
         if (existingCart) {
           cart.value = existingCart
           const items = await fetchCartItemsByCartId(existingCart.id)
           cartItems.value = items || []
+        } else if (cart.value) {
+          // If there's no existing cart but we have a cart in store, create it
+          createOrUpdateCart()
         }
       } catch (error) {
         toast({
-          title: 'Error loading cart',
+          title: 'Error syncing cart',
           description: (error as Error).message,
         })
-        console.error('Error loading user cart:', error)
+        console.error('Error syncing cart with user:', error)
       }
     }
 
+<<<<<<< HEAD
     async function deleteCartItem(itemId: string) {
       try {
         await useFetch(`/api/supabase/cart-items/${itemId}`, {
@@ -164,28 +238,38 @@ export const useCartStore = defineStore(
     }
 
     // Initialize cart when user changes
+=======
+    // Watch for user changes to sync cart
+>>>>>>> parent of 7f3663e (update typing and optimze cart)
     watch(
       user,
       async (newUser) => {
         if (newUser) {
-          await loadUserCart()
+          await syncCartWithUser()
         } else {
-          cartItems.value = []
-          cart.value = null
+          await clearCart()
         }
       },
-      { immediate: true },
+      {
+        immediate: true,
+      },
     )
 
     return {
-      cart,
       cartItems,
-      totalQuantity,
-      totalPrice,
       addToCart,
       removeCartItem,
       increaseItemQuantity,
+<<<<<<< HEAD
       decreaseItemQuantity,
+=======
+      clearCart,
+      decreaseItemQuantity,
+      totalQuantity,
+      isMiniCartVisible,
+      cart,
+      syncCartWithUser,
+>>>>>>> parent of 7f3663e (update typing and optimze cart)
     }
   },
   {

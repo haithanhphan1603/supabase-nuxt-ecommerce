@@ -27,9 +27,7 @@ const links = ref([
   { to: '/faq', label: 'FAQ' },
 ])
 
-const { totalQuantity } = storeToRefs(useCartStore())
-
-const isMiniCartVisible = ref(false)
+const { totalQuantity, isMiniCartVisible } = storeToRefs(useCartStore())
 const showMiniCart = () => {
   isMiniCartVisible.value = true
 }

@@ -94,7 +94,7 @@ import {
 type Product = Tables<'products'> & {
   vendors: { name: string }
 }
-type CartItem = TablesInsert<'cartItems'>
+type CartItem = TablesInsert<'cartItem'>
 
 interface Props {
   product: Product
@@ -159,14 +159,14 @@ function removeFromWishList() {
 function addToCart() {
   isLoading.value = true
 
-  const cartItems: CartItem = {
+  const cartItem: CartItem = {
     price: props.product.unitPrice as number,
     productId: props.product.id,
     quantity: 1,
     id: useId(),
   }
 
-  cartStore.addToCart(cartItems)
+  cartStore.addToCart(cartItem)
   isLoading.value = false
 }
 </script>
