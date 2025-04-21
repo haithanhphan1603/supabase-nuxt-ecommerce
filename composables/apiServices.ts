@@ -24,7 +24,7 @@ export const useApiServices = () => {
   }
 
   async function getProductsByCategory(
-    categoryId: string,
+    categoryId: number,
     searchParams: CollectionSearchParams,
   ) {
     const { data, error } = await useFetch(
@@ -47,57 +47,42 @@ export const useApiServices = () => {
       })
     }
 
-    return data.value
+    return data.value?.products || []
   }
 
   async function getCategoryBySlug(slug: string) {
-    const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('slug', slug)
-    if (error) {
-      console.error(error)
+    const { data, error } = await useFetch(`/api/supabase/category/${slug}`)
+    if (error.value) {
       toast({
         title: 'Error fetching category',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
-    } else {
-      return data[0]
+      return null
     }
+    return data.value?.category
   }
 
   async function getTotalProductsByCategory(
     categoryId: number,
     searchInfo: CollectionSearchParams,
   ) {
-    let query = supabase.from('products_categories').select(
-      `
-      products!inner (
-        id,
-        productType
-      )
-    `,
-      { count: 'exact' },
+    const { data, error } = await useFetch(
+      `/api/supabase/products-categories/${categoryId}/count`,
+      {
+        query: {
+          productType: searchInfo.productType,
+        },
+      },
     )
-    query = query.eq('categoryId', categoryId)
-
-    if (searchInfo.productType.length > 0) {
-      query = query.in('products.productType', searchInfo.productType)
-    }
-
-    const { count, error } = await query
-    if (error) {
-      console.error('Error fetching total products:', error)
+    if (error.value) {
       toast({
         title: 'Error fetching total products',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
     }
-    return count
+    return data.value?.count || 0
   }
 
   async function fetchProductById(productId: number) {
@@ -144,14 +129,16 @@ export const useApiServices = () => {
   }
 
   async function updateCart(cart: Cart) {
-    const { error: cartError } = await supabase.from('cart').upsert([cart])
-    if (cartError) {
+    const { error } = await useFetch('/api/supabase/cart', {
+      method: 'POST',
+      body: cart,
+    })
+    if (error.value) {
       toast({
         title: 'Error updating cart',
-        description: cartError.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(cartError)
     }
   }
 
@@ -165,7 +152,7 @@ export const useApiServices = () => {
       })
       return null
     }
-    return data.value
+    return data.value?.wishlist
   }
 
   async function deleteWishlistItemApi(userId: string, productId: number) {
@@ -226,7 +213,7 @@ export const useApiServices = () => {
       })
       return null
     }
-    return data.value
+    return data.value?.cartItems
   }
 
   async function fetchCartByUserId(userId: string) {
@@ -239,27 +226,24 @@ export const useApiServices = () => {
       })
       return null
     }
-    return data.value
+    return data.value?.cart
   }
 
   async function searchProduct(productName: string) {
-    const { data, error } = await supabase.rpc(
-      'search_products_by_name_prefix',
-      {
-        prefix: productName,
+    const { data, error } = await useFetch('/api/supabase/product/search', {
+      query: {
+        name: productName,
       },
-    )
-
-    if (error) {
-      console.error('Error searching product:', error)
+    })
+    if (error.value) {
       toast({
         title: 'Error searching product',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
+      return null
     }
-    return data
+    return data.value?.products
   }
 
   return {

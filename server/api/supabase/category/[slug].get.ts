@@ -3,20 +3,25 @@ import type { Database } from '~/types/database.types'
 
 export default defineEventHandler(async (event) => {
   const client = event.context.supabase as SupabaseClient<Database>
-  const userId = event.context.params?.userId as string
+  const categorySlug = event.context.params?.slug as string
 
-  const { data, error } = await client
-    .from('cart')
-    .select('*')
-    .eq('createdby', userId)
-    .single()
-
-  if (error) {
+  if (!categorySlug) {
     throw createError({
       statusCode: 400,
-      statusMessage: error.message,
+      statusMessage: 'Missing category slug',
     })
   }
 
-  return { cart: data }
+  const { data, error } = await client
+    .from('categories')
+    .select('*')
+    .eq('slug', categorySlug)
+    .single()
+  if (error) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Failed to fetch category',
+    })
+  }
+  return { category: data }
 })

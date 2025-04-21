@@ -75,6 +75,6 @@ export default defineEventHandler(async (event) => {
       statusMessage: error.message,
     })
   }
-
-  return data.map((item) => item.products)
+  const products = data.map((item) => item.products)
+  return { products }
 })
