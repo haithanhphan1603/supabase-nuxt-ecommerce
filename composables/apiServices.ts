@@ -2,9 +2,7 @@ import type { PostgrestError } from '@supabase/supabase-js'
 import { useToast } from '~/components/ui/toast'
 import type { TablesInsert } from '~/types/database.types'
 import type { CollectionSearchParams } from '~/types/search.types'
-import { SortBy } from '~/types/search.types'
 
-const PRODUCTS_CATEGORIES = 'products_categories'
 type CartItem = TablesInsert<'cartItems'>
 type Cart = TablesInsert<'cart'>
 
@@ -27,121 +25,64 @@ export const useApiServices = () => {
 
   async function getProductsByCategory(
     categoryId: number,
-    searchInfo: CollectionSearchParams,
+    searchParams: CollectionSearchParams,
   ) {
-    let query = supabase
-      .from(PRODUCTS_CATEGORIES)
-      .select('products(*,vendors(name))')
-      .eq('categoryId', categoryId)
-      .not('products(id)', 'is', null)
-
-    query = query.range(
-      searchInfo.start,
-      searchInfo.start + searchInfo.limit - 1,
+    const { data, error } = await useFetch(
+      `/api/supabase/products-categories/${categoryId}`,
+      {
+        query: {
+          start: searchParams.start,
+          limit: searchParams.limit,
+          sortBy: searchParams.sortBy,
+          productType: searchParams.productType,
+        },
+      },
     )
 
-    if (searchInfo.productType.length > 0) {
-      query = query.in('products.productType', searchInfo.productType)
-    }
-
-    // Add sorting logic
-    switch (searchInfo.sortBy) {
-      case SortBy.PRICE_ASC:
-        query = query.order('products(unitPrice)', {
-          ascending: true,
-        })
-        break
-      case SortBy.PRICE_DESC:
-        query = query.order('products(unitPrice)', {
-          ascending: false,
-        })
-        break
-      case SortBy.NAME_ASC:
-        query = query.order('products(name)', {
-          ascending: true,
-        })
-        break
-      case SortBy.NAME_DESC:
-        query = query.order('products(name)', {
-          ascending: false,
-        })
-        break
-      case SortBy.CREATED_AT_DESC:
-        query = query.order('products(createdAt)', {
-          ascending: false,
-        })
-        break
-      // For SortBy.MANUAL, we don't add any specific ordering
-      default:
-        // No specific ordering for manual or unsupported sorting options
-        break
-    }
-
-    const { data, error } = await query
-
-    if (error) {
-      console.error(error)
+    if (error.value) {
       toast({
         title: 'Error fetching products',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw createError({
-        message: error.message,
-        statusCode: 400,
-      })
     }
-    return data.map((item) => item.products)
+
+    return data.value?.products || []
   }
 
   async function getCategoryBySlug(slug: string) {
-    const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('slug', slug)
-    if (error) {
-      console.error(error)
+    const { data, error } = await useFetch(`/api/supabase/category/${slug}`)
+    if (error.value) {
       toast({
         title: 'Error fetching category',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
-    } else {
-      return data[0]
+      return null
     }
+    return data.value?.category
   }
 
   async function getTotalProductsByCategory(
     categoryId: number,
     searchInfo: CollectionSearchParams,
   ) {
-    let query = supabase.from('products_categories').select(
-      `
-      products!inner (
-        id,
-        productType
-      )
-    `,
-      { count: 'exact' },
+    const { data, error } = await useFetch(
+      `/api/supabase/products-categories/${categoryId}/count`,
+      {
+        query: {
+          productType: searchInfo.productType,
+        },
+      },
     )
-    query = query.eq('categoryId', categoryId)
-
-    if (searchInfo.productType.length > 0) {
-      query = query.in('products.productType', searchInfo.productType)
-    }
-
-    const { count, error } = await query
-    if (error) {
-      console.error('Error fetching total products:', error)
+    if (error.value) {
       toast({
         title: 'Error fetching total products',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
     }
-    return count
+    return data.value?.count || 0
   }
 
   async function fetchProductById(productId: number) {
@@ -160,169 +101,149 @@ export const useApiServices = () => {
     return data
   }
 
-  async function deleteCartItems(cartId: string) {
-    const { error: itemsError } = await supabase
-      .from('cartItems')
-      .delete()
-      .eq('cartId', cartId)
-    if (itemsError) {
-      throw itemsError
-    }
-  }
-
-  async function deleteCart(cartId: string) {
-    const { error: cartError } = await supabase
-      .from('cart')
-      .delete()
-      .eq('id', cartId)
-    if (cartError) {
-      throw apiError(cartError)
-    }
-  }
-
   async function deleteCartItemById(cartItemId: string) {
-    const { error } = await supabase
-      .from('cartItems')
-      .delete()
-      .eq('id', cartItemId)
-    if (error) {
-      throw apiError(error)
+    const { error } = await useFetch(`/api/supabase/cart-items/${cartItemId}`, {
+      method: 'DELETE',
+    })
+    if (error.value) {
+      toast({
+        title: 'Error deleting cart item',
+        description: error.value.message,
+        variant: 'destructive',
+      })
     }
   }
 
   async function updateCartItems(cartItems: CartItem[]) {
-    const { error: itemsError } = await supabase
-      .from('cartItems')
-      .upsert(cartItems)
-    if (itemsError) {
+    const { error } = await useFetch('/api/supabase/cart-items', {
+      method: 'POST',
+      body: cartItems,
+    })
+    if (error.value) {
       toast({
         title: 'Error updating cart items',
-        description: itemsError.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(itemsError)
     }
   }
 
   async function updateCart(cart: Cart) {
-    const { error: cartError } = await supabase.from('cart').upsert([cart])
-    if (cartError) {
+    const { error } = await useFetch('/api/supabase/cart', {
+      method: 'POST',
+      body: cart,
+    })
+    if (error.value) {
       toast({
         title: 'Error updating cart',
-        description: cartError.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(cartError)
     }
   }
 
   async function getWishlistItems(userId: string) {
-    const { data, error } = await supabase
-      .from('wishlist')
-      .select('*')
-      .eq('user_id', userId)
-    if (error) {
-      console.error(error)
+    const { data, error } = await useFetch(`/api/supabase/wishlist/${userId}`)
+    if (error.value) {
       toast({
-        title: 'Error fetching wishlist',
-        description: error.message,
+        title: 'Error fetching wishlist items',
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
+      return null
     }
-    return data
+    return data.value?.wishlist
   }
 
   async function deleteWishlistItemApi(userId: string, productId: number) {
-    const { error } = await supabase
-      .from('wishlist')
-      .delete()
-      .eq('user_id', userId)
-      .eq('product_id', productId)
-
-    if (error) {
-      console.error('Error deleting wishlist item:', error)
+    const { data, error } = await useFetch('/api/supabase/wishlist', {
+      method: 'DELETE',
+      body: {
+        userId,
+        productId,
+      },
+    })
+    if (error.value) {
       toast({
         title: 'Error deleting wishlist item',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
+    }
+    if (data.value?.success === true) {
+      toast({
+        title: 'Deleted from wishlist',
+        description: 'Product has been removed from your wishlist.',
+        variant: 'success',
+      })
     }
   }
 
   async function addToWishlistApi(userId: string, productId: number) {
-    const { error } = await supabase
-      .from('wishlist')
-      .insert([{ user_id: userId, product_id: productId }])
-    if (error) {
-      console.error('Error adding to wishlist:', error)
+    const { data, error } = await useFetch('/api/supabase/wishlist', {
+      method: 'POST',
+      body: {
+        userId,
+        productId,
+      },
+    })
+    if (error.value) {
       toast({
         title: 'Error adding to wishlist',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
+    }
+    if (data.value?.success === true) {
+      toast({
+        title: 'Added to wishlist',
+        description: 'Product has been added to your wishlist.',
+        variant: 'success',
+      })
     }
   }
 
   async function fetchCartItemsByCartId(cartId: string) {
-    const { data, error } = await supabase
-      .from('cartItems')
-      .select('*')
-      .eq('cartId', cartId)
-
-    if (error) {
-      console.error('Error fetching cart items:', error)
+    const { data, error } = await useFetch(`/api/supabase/cart/${cartId}/items`)
+    if (error.value) {
       toast({
         title: 'Error fetching cart items',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
+      return null
     }
-    return data
+    return data.value?.cartItems
   }
 
   async function fetchCartByUserId(userId: string) {
-    const { data, error } = await supabase
-      .from('cart')
-      .select('*')
-      .eq('createdby', userId as string)
-      .order('updatedat', { ascending: false })
-      .limit(1)
-      .single()
-
-    if (error && error.code !== 'PGRST116') {
-      console.error('Error fetching cart:', error)
+    const { data, error } = useFetch(`/api/supabase/cart/${userId}`)
+    if (error.value) {
       toast({
         title: 'Error fetching cart',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
+      return null
     }
-    return data
+    return data.value?.cart
   }
 
   async function searchProduct(productName: string) {
-    const { data, error } = await supabase.rpc(
-      'search_products_by_name_prefix',
-      {
-        prefix: productName,
+    const { data, error } = await useFetch('/api/supabase/product/search', {
+      query: {
+        name: productName,
       },
-    )
-
-    if (error) {
-      console.error('Error searching product:', error)
+    })
+    if (error.value) {
       toast({
         title: 'Error searching product',
-        description: error.message,
+        description: error.value.message,
         variant: 'destructive',
       })
-      throw apiError(error)
+      return null
     }
-    return data
+    return data.value?.products
   }
 
   return {
@@ -330,8 +251,6 @@ export const useApiServices = () => {
     getProductsByCategory,
     getCategoryBySlug,
     getTotalProductsByCategory,
-    deleteCart,
-    deleteCartItems,
     updateCartItems,
     updateCart,
     getWishlistItems,

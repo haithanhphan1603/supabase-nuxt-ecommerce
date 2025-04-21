@@ -19,7 +19,6 @@
           @click.stop.prevent="addToCart"
         >
           <div>Add to cart</div>
-          <Loader v-if="isLoading" class="ml-2 h-4 w-4" />
         </Button>
         <TooltipProvider>
           <Tooltip>
@@ -78,7 +77,7 @@
 
 <script setup lang="ts">
 import { useElementHover } from '@vueuse/core'
-import { HeartIcon, Loader } from 'lucide-vue-next'
+import { HeartIcon } from 'lucide-vue-next'
 import Card from '../ui/card/Card.vue'
 import AspectRatio from '../ui/aspect-ratio/AspectRatio.vue'
 import { useCartStore } from '~/store/cart'
@@ -114,7 +113,6 @@ const { activeProductId, setActiveProduct } = useActiveTouchProduct()
 
 // Local refs
 const myHoverableElement = ref<HTMLElement | null>(null)
-const isLoading = ref(false)
 const isDialogOpen = ref(false)
 
 // Computed properties - hover states
@@ -157,8 +155,6 @@ function removeFromWishList() {
 }
 
 function addToCart() {
-  isLoading.value = true
-
   const cartItem: CartItem = {
     price: props.product.unitPrice as number,
     productId: props.product.id,
@@ -167,6 +163,5 @@ function addToCart() {
   }
 
   cartStore.addToCart(cartItem)
-  isLoading.value = false
 }
 </script>
