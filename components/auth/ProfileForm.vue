@@ -1,14 +1,14 @@
 <template>
-  <form @submit="onSubmit">
-    <Card>
-      <CardHeader>
-        <CardTitle>Account</CardTitle>
-        <CardDescription>
-          Make changes to your account here. Click save when you're done.
-        </CardDescription>
-      </CardHeader>
+  <Card>
+    <CardHeader>
+      <CardTitle>Account</CardTitle>
+      <CardDescription>
+        Make changes to your account here. Click save when you're done.
+      </CardDescription>
+    </CardHeader>
 
-      <CardContent class="space-y-2">
+    <CardContent class="space-y-2">
+      <form @submit="onSubmit">
         <FormInput
           type="text"
           label="First Name"
@@ -23,15 +23,13 @@
           placeholder="Enter your new last name"
         >
         </FormInput>
-      </CardContent>
-      <CardFooter class="grid grid-cols-2 gap-4">
-        <Button type="submit">Save changes</Button>
-        <Button variant="outline" type="button" @click="resetForm"
-          >Cancel</Button
-        >
-      </CardFooter>
-    </Card>
-  </form>
+      </form>
+    </CardContent>
+    <CardFooter class="grid grid-cols-2 gap-4">
+      <Button type="submit">Save changes</Button>
+      <Button variant="outline" type="button" @click="resetForm">Cancel</Button>
+    </CardFooter>
+  </Card>
 </template>
 
 <script setup lang="ts">

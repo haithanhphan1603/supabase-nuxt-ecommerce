@@ -10,6 +10,9 @@
       <TabsContent value="account">
         <ProfileForm />
       </TabsContent>
+      <TabsContent value="address">
+        <Address />
+      </TabsContent>
     </Tabs>
     <Button class="mt-4 px-8" @click="logOut">
       <span class="mr-2">Logout</span>
@@ -21,6 +24,7 @@
 <script setup lang="ts">
 import { Tabs, TabsList, TabsContent, TabsTrigger } from '~/components/ui/tabs'
 import ProfileForm from '~/components/auth/ProfileForm.vue'
+import Address from '~/components/auth/Address.vue'
 import { LogOut } from 'lucide-vue-next'
 
 const user = useSupabaseUser()
