@@ -25,7 +25,6 @@ export const useApiServices = () => {
 
   async function fetchProductsByIds(productIds: number[]) {
     const { data, error } = await useFetch('/api/supabase/product/batch', {
-      method: 'get',
       query: {
         productIds,
       },

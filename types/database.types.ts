@@ -15,7 +15,7 @@ export type Database = {
           city: string
           country: string
           created_at: string | null
-          id: number
+          id: string
           name: string
           userId: string
           zipcode: string
@@ -25,9 +25,9 @@ export type Database = {
           city: string
           country: string
           created_at?: string | null
-          id?: number
+          id?: string
           name: string
-          userId: string
+          userId?: string
           zipcode: string
         }
         Update: {
@@ -35,7 +35,7 @@ export type Database = {
           city?: string
           country?: string
           created_at?: string | null
-          id?: number
+          id?: string
           name?: string
           userId?: string
           zipcode?: string
@@ -173,68 +173,38 @@ export type Database = {
       }
       orders: {
         Row: {
+          addressId: string | null
           createdAt: string | null
           id: number
           orderStatus: Database["public"]["Enums"]["orderStatus"] | null
+          stripeId: string | null
           updatedAt: string | null
           userId: string | null
         }
         Insert: {
+          addressId?: string | null
           createdAt?: string | null
-          id?: never
+          id?: number
           orderStatus?: Database["public"]["Enums"]["orderStatus"] | null
+          stripeId?: string | null
           updatedAt?: string | null
           userId?: string | null
         }
         Update: {
+          addressId?: string | null
           createdAt?: string | null
-          id?: never
+          id?: number
           orderStatus?: Database["public"]["Enums"]["orderStatus"] | null
+          stripeId?: string | null
           updatedAt?: string | null
           userId?: string | null
-        }
-        Relationships: []
-      }
-      payments: {
-        Row: {
-          amount: number | null
-          createdAt: string | null
-          currency: string | null
-          id: number
-          orderId: number | null
-          paymentMethod: string | null
-          paymentStatus: string | null
-          transactionId: string | null
-          updatedAt: string | null
-        }
-        Insert: {
-          amount?: number | null
-          createdAt?: string | null
-          currency?: string | null
-          id?: number
-          orderId?: number | null
-          paymentMethod?: string | null
-          paymentStatus?: string | null
-          transactionId?: string | null
-          updatedAt?: string | null
-        }
-        Update: {
-          amount?: number | null
-          createdAt?: string | null
-          currency?: string | null
-          id?: number
-          orderId?: number | null
-          paymentMethod?: string | null
-          paymentStatus?: string | null
-          transactionId?: string | null
-          updatedAt?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "payments_order_id_fkey"
-            columns: ["orderId"]
+            foreignKeyName: "orders_addressId_fkey"
+            columns: ["addressId"]
             isOneToOne: false
-            referencedRelation: "orders"
+            referencedRelation: "addresses"
             referencedColumns: ["id"]
           },
         ]

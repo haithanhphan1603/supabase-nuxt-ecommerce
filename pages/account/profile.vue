@@ -3,23 +3,12 @@
     <h2 class="text-3xl font-bold mb-4 lg:mb-8">Welcome, {{ username }}</h2>
     <Tabs v-model="tab" class="mx-auto">
       <TabsList class="grid w-full grid-cols-3">
-        <TabsTrigger value="orders">Orders</TabsTrigger>
         <TabsTrigger value="account">Account</TabsTrigger>
         <TabsTrigger value="address">Address</TabsTrigger>
       </TabsList>
 
       <TabsContent value="account">
         <ProfileForm />
-      </TabsContent>
-      <TabsContent value="orders">
-        <Card>
-          <CardHeader>
-            <CardTitle>Order History</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <h6 class="text-base">You haven't placed any orders yet.</h6>
-          </CardContent>
-        </Card>
       </TabsContent>
     </Tabs>
     <Button class="mt-4 px-8" @click="logOut">
@@ -36,7 +25,7 @@ import { LogOut } from 'lucide-vue-next'
 
 const user = useSupabaseUser()
 const supabase = useSupabaseClient()
-const tab = ref('orders')
+const tab = ref('account')
 
 const username = computed(() => {
   return `${user.value?.user_metadata.firstName} ${user.value?.user_metadata.lastName}`
