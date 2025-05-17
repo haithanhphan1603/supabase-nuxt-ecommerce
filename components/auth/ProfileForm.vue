@@ -8,32 +8,35 @@
     </CardHeader>
 
     <CardContent class="space-y-2">
-      <form @submit="onSubmit">
-        <FormInput
-          type="text"
-          label="First Name"
-          name="firstName"
-          placeholder="Enter your new first name"
-        >
-        </FormInput>
-        <FormInput
-          type="text"
-          label="Last Name"
-          name="lastName"
-          placeholder="Enter your new last name"
-        >
-        </FormInput>
+      <form @submit.prevent="onSubmit">
+        <div class="space-y-4">
+          <FormInput
+            type="text"
+            label="First Name"
+            name="firstName"
+            placeholder="Enter your new first name"
+          />
+          <FormInput
+            type="text"
+            label="Last Name"
+            name="lastName"
+            placeholder="Enter your new last name"
+          />
+          <p v-if="errorMsg" class="text-sm text-red-500">{{ errorMsg }}</p>
+        </div>
       </form>
     </CardContent>
     <CardFooter class="grid grid-cols-2 gap-4">
-      <Button type="submit">Save changes</Button>
+      <Button type="button" @click="onSubmit">Save changes</Button>
       <Button variant="outline" type="button" @click="resetForm">Cancel</Button>
     </CardFooter>
   </Card>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useForm } from 'vee-validate'
+import * as yup from 'yup'
 import FormInput from './Input.vue'
 import { Button } from '@/components/ui/button'
 import {
@@ -50,7 +53,11 @@ const user = useSupabaseUser()
 const supabase = useSupabaseClient()
 const errorMsg = ref('')
 
-const { userInfoSchema } = validators()
+// Define validation schema
+const userInfoSchema = yup.object({
+  firstName: yup.string().required('First name is required'),
+  lastName: yup.string().required('Last name is required'),
+})
 
 const { toast } = useToast()
 
@@ -58,31 +65,36 @@ const { toast } = useToast()
 const { handleSubmit, resetForm } = useForm({
   validationSchema: userInfoSchema,
   initialValues: {
-    firstName: user.value?.user_metadata.firstName || '',
-    lastName: user.value?.user_metadata.lastName || '',
+    firstName: user.value?.user_metadata?.firstName || '',
+    lastName: user.value?.user_metadata?.lastName || '',
   },
 })
 
 // Form submission handler
 const onSubmit = handleSubmit(async (values) => {
-  const { error } = await supabase.auth.updateUser({
-    data: {
-      firstName: values.firstName,
-      lastName: values.lastName,
-    },
-  })
-  if (error) {
-    errorMsg.value = error.message
-    throw createError({
-      name: 'Update failed',
-      message: error.message,
+  try {
+    errorMsg.value = ''
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        firstName: values.firstName,
+        lastName: values.lastName,
+      },
     })
+
+    if (error) {
+      errorMsg.value = error.message
+      return
+    }
+
+    toast({
+      variant: 'success',
+      description: 'Your profile has been updated',
+      title: 'Profile updated',
+    })
+  } catch (err) {
+    errorMsg.value =
+      err instanceof Error ? err.message : 'An unexpected error occurred'
   }
-  toast({
-    variant: 'success',
-    description: 'Your profile has been updated',
-    title: 'Profile updated',
-  })
 })
 </script>
 

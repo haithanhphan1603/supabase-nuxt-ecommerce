@@ -30,6 +30,14 @@ export default () => {
       .required('Last name is required')
       .min(2, 'Last name must be at least 2 characters')
       .max(50, 'Last name must be less than 50 characters'),
+  })
+
+  const addressSchema = yup.object({
+    name: yup
+      .string()
+      .min(2, 'Name must be at least 2 characters')
+      .max(50, 'Name must be less than 50 characters')
+      .required('Name is required'),
     address: yup
       .string()
       .required('Address is required')
@@ -56,5 +64,6 @@ export default () => {
     loginSchema,
     signupSchema,
     userInfoSchema,
+    addressSchema,
   }
 }

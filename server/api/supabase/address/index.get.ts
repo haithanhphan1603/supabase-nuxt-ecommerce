@@ -1,14 +1,22 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '~/types/database.types'
+import { serverSupabaseUser } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
   const client = event.context.supabase as SupabaseClient<Database>
-  const userId = event.context.params?.userId as string
+  const user = await serverSupabaseUser(event)
+
+  if (!user) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Unauthorized',
+    })
+  }
 
   const { data, error } = await client
     .from('addresses')
     .select('*')
-    .eq('userId', userId)
+    .eq('userId', user.id)
 
   if (error) {
     throw createError({
