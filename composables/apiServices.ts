@@ -23,6 +23,23 @@ export const useApiServices = () => {
     })
   }
 
+  async function fetchProductsByIds(productIds: number[]) {
+    const { data, error } = await useFetch('/api/supabase/product/batch', {
+      query: {
+        productIds,
+      },
+    })
+    if (error.value) {
+      toast({
+        title: 'Error fetching products',
+        description: error.value.message,
+        variant: 'destructive',
+      })
+      return null
+    }
+    return data.value?.products || []
+  }
+
   async function getProductsByCategory(
     categoryId: number,
     searchParams: CollectionSearchParams,
@@ -261,5 +278,6 @@ export const useApiServices = () => {
     fetchCartByUserId,
     searchProduct,
     deleteCartItemById,
+    fetchProductsByIds,
   }
 }

@@ -205,9 +205,6 @@ onMounted(async () => {
   const paymentElement = elements.create('payment', options)
   paymentElement.mount('#payment-element')
 
-  const linkAuthenticationElement = elements.create('linkAuthentication')
-  linkAuthenticationElement.mount('#link-authentication-element')
-
   isLoading.value = false
 })
 
